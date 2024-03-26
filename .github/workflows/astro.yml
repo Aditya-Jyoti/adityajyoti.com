@@ -63,6 +63,9 @@ jobs:
           node-version: "16"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
           cache-dependency-path: ${{ env.BUILD_PATH }}/${{ steps.detect-package-manager.outputs.manager }}-lock.yaml
+      - name: Install Astro
+        run: ${{ steps.detect-package-manager.outputs.runner }} ${{ steps.detect-package-manager.outputs.command }} astro
+        working-directory: ${{ env.BUILD_PATH }}
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v4
