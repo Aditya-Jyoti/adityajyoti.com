@@ -1,0 +1,57 @@
+---
+const { title, description, date, link } = Astro.props;
+---
+
+<section class="relative">
+  <div class="absolute z-0 bg-black border-2 border-black w-full flex flex-col md:translate-x-2 md:translate-y-2 translate-x-1 translate-y-1">
+    <div class="border-b-2 border-black py-1 px-2 flex gap-2 bg-black">
+      <i class="fa-regular fa-circle bg-custom-light-white rounded-full"></i>
+      <i class="fa-regular fa-circle bg-custom-light-white rounded-full"></i>
+      <i class="fa-regular fa-circle bg-custom-light-white rounded-full"></i>
+    </div>
+
+    <div class="p-4 flex flex-col">
+      <span class="text-xl font-semibold">{title}</span>
+      <span class="md:text-lg text-sm">{description}</span>
+
+      <div class="flex items-center mt-2 justify-between">
+        <div class="font-bold text-lg">{date}</div>
+        <a href={link} target="_blank">
+          <div
+            class="bg-black px-16 border-2 border-black w-fit ml-2 font-bold hover:bg-custom-light-grey"
+          >
+            visit
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {}
+
+  <div
+    class="relative z-10 bg-custom-light-white border-2 border-black w-full flex flex-col"
+  >
+    <div class="border-b-2 border-black py-1 px-2 flex gap-2 bg-custom-grey">
+      <i class="fa-regular fa-circle bg-custom-light-white rounded-full"></i>
+      <i class="fa-regular fa-circle bg-custom-light-white rounded-full"></i>
+      <i class="fa-regular fa-circle bg-custom-light-white rounded-full"></i>
+    </div>
+
+    <div class="p-4 flex flex-col">
+      <span class="text-xl font-semibold">{title}</span>
+      <span class="md:text-lg text-sm">{description}</span>
+
+      <div class="flex items-center mt-2 justify-between">
+        <div class="font-bold text-lg">{date}</div>
+        <a href={link} target="_blank">
+          <div
+            class="bg-custom-grey px-16 border-2 border-black w-fit ml-2 font-bold hover:bg-custom-light-grey"
+          >
+            visit
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

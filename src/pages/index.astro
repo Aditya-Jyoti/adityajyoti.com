@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
-
 import Navbar from "../components/Navbar.astro";
+import BlogPost from "../components/BlogPost.astro";
 ---
 
 <Layout>
@@ -90,9 +90,9 @@ import Navbar from "../components/Navbar.astro";
     </div>
 
     <section
-      class="bg-custom-light-grey border-y-2 border-black w-full h-full py-2 px-14 hidden md:flex"
+      class="bg-custom-light-grey border-y-2 border-black w-full h-full py-2 hidden md:flex"
     >
-      <div class="flex mt-4 mb-4">
+      <div class="flex mt-4 mb-4 mx-auto w-[95%]">
         {
           // interest 1
         }
@@ -342,7 +342,50 @@ import Navbar from "../components/Navbar.astro";
     </section>
 
     {
-      // project 3
+      // Blog
     }
+
+    <section
+      id="blog"
+      class="bg-custom-light-grey border-t-2 border-black w-full"
+    >
+      <div class="mx-auto w-[95%] my-4 flex flex-col">
+        <span class="text-3xl font-bold">Blog </span>
+        <span class="md:text-xl text-lg mt-2"
+          >I also happen to write a blog called "Aditya Writes". Here I talk
+          about random findings and things that interest me, sometimes posting
+          educational content like how to's and stuff.</span
+        >
+
+        <div class="flex flex-col w-full mt-4">
+          {
+            // blog 1
+          }
+
+          <BlogPost
+            title="sample title"
+            date="dd/mm/yy"
+            description="Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus iure vel aliquam nobis dicta porro mollitia! Deleniti voluptate dicta provident eius a sequi, at ratione perferendis neque animi nam autem?"
+          />
+        </div>
+
+        <div class="w-full flex justify-end mt-4 mr-8">
+          <div class="">
+            <div
+              class="absolute z-0 bg-black w-fit font-bold px-8 py-1 border-2 border-black translate-x-1 translate-y-1"
+            >
+              Go Visit
+            </div>
+            <a href="#" target="_blank">
+              <div
+                class="relative z-10 bg-custom-grey w-fit font-bold px-8 py-1 border-2 border-black hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-150"
+              >
+                Go Visit
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </Layout>
