@@ -7,6 +7,11 @@ import Navbar from "../components/Navbar.astro";
 <Layout>
   <main class="flex flex-col w-full bg-custom-light-white">
     <Navbar />
+
+    {
+      // Hero Section //
+    }
+
     <section
       id="about"
       class="bg-custom-light-white flex md:flex-row flex-col md:justify-between md:items-center md:m-auto md:max-w-[70%]"
@@ -41,6 +46,103 @@ import Navbar from "../components/Navbar.astro";
         class="flex ml-auto md:hidden w-64 -mt-14"
       />
       <img src="/img-long.png" alt="profile" class="md:flex hidden" />
+    </section>
+
+    {
+      // interests mobile //
+    }
+
+    <section class="md:hidden relative flex flex-col w-full">
+      <div class="border-t-2 border-black w-full"></div>
+
+      <div
+        class="flex gap-4 absolute w-full items-center justify-center -top-5 font-semibold"
+      >
+        <div
+          class="bg-custom-light-grey p-1 border-2 border-black w-28 text-center"
+        >
+          roboticist
+        </div>
+        <div
+          class="bg-custom-light-grey p-1 border-2 border-black w-28 text-center"
+        >
+          programmer
+        </div>
+        <div
+          class="bg-custom-light-grey p-1 border-2 border-black w-28 text-center"
+        >
+          elocutionist
+        </div>
+      </div>
+    </section>
+
+    {
+      // Interests //
+    }
+    <div
+      class="w-full -mb-5 z-10 -mt-5 md:flex hidden items-center justify-center"
+    >
+      <div
+        class="border-2 border-black w-fit py-1 px-12 bg-custom-light-grey text-lg font-bold tracking-widest"
+      >
+        interests
+      </div>
+    </div>
+
+    <section
+      class="bg-custom-light-grey border-y-2 border-black w-full h-full py-2 px-14 hidden md:flex"
+    >
+      <div class="flex mt-4 mb-4">
+        {
+          // interest 1
+        }
+
+        <div class="flex flex-col w-[80%] text-center">
+          <span class="text-xl font-semibold tracking-wide">robotics</span>
+          <span>
+            I love building things from scratch. Imagine a world where all the
+            hardware that you use was sourced and built by yourself. That's the
+            world I want to live in. As a part of a special team dedicated to
+            robotics in my college, I hope to develop my skills further and take
+            part in competitions around the world.
+          </span>
+        </div>
+
+        <div class="border-r-2 border-black mx-4"></div>
+
+        {
+          // interest 1
+        }
+
+        <div class="flex flex-col w-[80%] text-center">
+          <span class="text-xl font-semibold tracking-wide">programming</span>
+          <span>
+            Programming feels like magic to me. It gives me the freedom to
+            explore and build my own world with only my imagination as a limit.
+            I hope to be able to make a product that helps easen the lives of
+            people that use it and be able to make a difference in the world.
+          </span>
+        </div>
+
+        <div class="border-r-2 border-black mx-4"></div>
+
+        {
+          // interest 1
+        }
+
+        <div class="flex flex-col w-[80%] text-center">
+          <span class="text-xl font-semibold tracking-wide"
+            >public speaking</span
+          >
+          <span>
+            The rush of emotions i feel when I am on stage, talking to a crowd
+            is something I can not explain. Seeing everyone's eyes on me,
+            listening to my every word and so much more gives me more adrenaline
+            than any thing in the world. I hope to one day be able to address
+            the peopl if only for a moment.
+          </span>
+        </div>
+      </div>
     </section>
   </main>
 </Layout>
