@@ -3,25 +3,45 @@ import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import ProjectCard from "../components/ProjectCard.astro";
+import FormattedDate from "../components/FormattedDate.astro";
+
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import "../styles/global.css";
+
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog")).sort(
+  (a: { data: { pubDate: number; }; }, b: { data: { pubDate: number; }; }) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
+    <link rel="icon" type="image" href="/me-sketch.png" />
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+
+    <script
+      defer
+      data-domain="adityajyoti.com"
+      src="https://analytics.adityajyoti.com/js/script.js"></script>
+    </script>
+    
   </head>
   <body
     class="bg-background text-foreground flex flex-col min-h-screen w-[60%] mx-auto font-handwriting"
   >
     <Header />
 
-    <section class="flex-grow">
+    <section class="flex-grow flex flex-col gap-4">
       <!-- root -->
       <section
         id="root"
-        class="flex justify-between items-center w-[80%] mx-auto py-12"
+        class="flex justify-between items-center w-[90%] mx-auto py-12"
       >
         <div class="flex flex-col text-xl">
           <span class="text-4xl font-black">Hey! I'm Aditya Jyoti</span>
@@ -73,12 +93,8 @@ import "../styles/global.css";
             </div>
           </div>
         </div>
-        <div class="w-[50%]">
-          <img
-            src="/me-sketch.png"
-            alt="my photo"
-            class="w-64 h-64 p-2 scale-125"
-          />
+        <div class="w-full scale-125 flex justify-center">
+          <img src="/me-sketch.png" alt="my photo" class="h-64 p-2" />
         </div>
       </section>
 
@@ -89,11 +105,11 @@ import "../styles/global.css";
           <div class="w-24 h-1 rounded-full bg-foreground"></div>
         </div>
 
-        <div class="text-xl">
+        <div class="text-xl text-right">
           I have worked on multiple fullstack projects and my biggest
           achievement has to be contributing to the technical infrastructure of
           the college I study in. Currently I am learning devops and am trying
-          to self host my entire life.
+          to self host my life.
         </div>
 
         <!-- project card -->
@@ -143,8 +159,8 @@ import "../styles/global.css";
               That's the world I want to live in.
             </span>
           </div>
-          <div class="flex flex-col">
-            <span class="font-bold text-2xl">. Programming -</span>
+          <div class="flex flex-col w-full items-end text-right">
+            <span class="font-bold text-2xl">- Programming .</span>
             <span
               >Programming feels like magic to me. It gives me the freedom to
               explore and build my own world with only my imagination as a
@@ -162,8 +178,163 @@ import "../styles/global.css";
           </div>
         </section>
       </section>
+
+      <!-- blog  -->
+      <section id="blog" class="flex flex-col gap-4 -mt-6">
+        <div class="flex flex-col w-full items-end"> 
+          <span class="text-4xl font-bold">I Also Write</span>
+          <div class="w-32 h-1 rounded-full bg-foreground"></div>
+        </div>
+        <!-- content -->
+        <section class="relative">
+          {
+            posts.slice(0, 2).map((post: { data: { title: unknown; description: unknown; pubDate: Date; }; id: any; }) => (
+              <div
+                class={`flex flex-col gap-4 w-full hover:translate-x-0.5 hover:translate-y-0.5 transition-all ease-in-out duration-300 border-2 border-foreground bg-background p-4 h-48 absolute z-10 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
+              >
+                <span class="text-2xl font-bold">{post.data.title}</span>
+                <span class="text-xl flex-grow">{post.data.description}</span>
+                <div class="w-full flex text-xl justify-between">
+                  <FormattedDate date={post.data.pubDate} />
+                  <a href={`/blog/${post.id}`} class="hover:underline underline-offset-2" target="_blank">read here</a>
+                </div>
+              </div>
+              <div
+                class={`flex flex-col gap-4 w-full border-2 bg-foreground border-foreground p-4 h-48 translate-x-1 translate-y-1 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
+              >
+              </div>
+            ))
+          }
+        </section>
+
+        <div class="text-xl my-2">
+          I maintain (try) a blog called <i class="font-bold">Aditya Writes</i>. You can check more of my posts <a
+            href="/blog"
+            target="_blank"
+            class="underline underline-offset-2">here</a
+          >...
+        </div>
+      </section>
+
+      <!-- contact  -->
+      <section id="contact" class="flex flex-col gap-4" >
+        <div class="flex flex-col w-full">
+          <span class="text-4xl font-bold">Talk To Me (please)</span>
+          <div class="w-48 h-1 rounded-full bg-foreground"></div>
+        </div>
+
+        <div class="text-xl" >
+          You can send me an email at <a href="mailto:website@adityajyoti.com">
+            <strong>website@adityajyoti.com</strong></a> 
+            and I will respond promptly, or you can leave a message here. 
+        </div>
+
+        <section class="flex flex-col gap-4 relative">
+          <div class="flex gap-4" >
+            <!-- name -->
+            <div class="relative w-full">
+              <span class="text-xl">name </span>
+              <div class="w-full">
+                <input
+                  required
+                  id="name"
+                  type="text"
+                  name="name"
+                  placeholder="How can I tell who you are without your name..."
+                  class="p-2 border-2 hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out w-full absolute z-10 border-foreground bg-background handdrawn-3 selection:border-foreground text-foreground placeholder-foreground"
+                />
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Name"
+                  readonly
+                  class="p-2 border-2 w-full border-foreground bg-foreground translate-x-1 translate-y-1 handdrawn-3 text-foreground placeholder-foreground"
+                />
+              </div>
+            </div>
+
+            <!-- email -->
+            <div class="relative w-full">
+              <span class="text-xl">email </span>
+              <div class="w-full">
+                <input
+                  required
+                  id="email"
+                  type="email"
+                  name="name"
+                  placeholder="How can I reply without knowing your email..."
+                  class="p-2 border-2 hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out w-full absolute z-10 border-foreground bg-background handdrawn-5 selection:border-foreground text-foreground placeholder-foreground"
+                />
+                <input
+                  type="email"
+                  name="name"
+                  placeholder="Name"
+                  readonly
+                  class="p-2 border-2 w-full border-foreground bg-foreground translate-x-1 translate-y-1 handdrawn-3 text-foreground placeholder-foreground"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="relative w-full">
+            <span class="text-xl">message </span>
+            <div class="w-full">
+              <textarea
+                required
+                id="message"
+                name="name"
+                rows="4"
+                placeholder="Please write your message (I read everything)..."
+                class="p-2 border-2 hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out w-full absolute z-10 border-foreground bg-background handdrawn-1 resize-none selection:border-foreground text-foreground placeholder-foreground"
+              />
+              <textarea
+                name="name"
+                placeholder="Name"
+                rows="4"
+                readonly
+                class="p-2 border-2 w-full border-foreground resize-none bg-foreground translate-x-1 translate-y-1 handdrawn-3 text-foreground placeholder-foreground"
+              />
+            </div>
+          </div>
+
+          <button
+            id="button"
+            class="p-2 bg-foreground text-background font-bold handdrawn-4 hover:bg-background hover:text-foreground transition-all duration-300 ease-in-out border-2 border-foreground"
+          >
+            Send
+          </button>
+        </section>
+
+      </section>
+
     </section>
 
     <Footer />
+
+    <script>
+      import { createClient } from "@supabase/supabase-js";
+
+      const supabase = createClient(
+        "https://teonperjhrienhvqqkfn.supabase.co",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlb25wZXJqaHJpZW5odnFxa2ZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU0NzQwMzEsImV4cCI6MjA1MTA1MDAzMX0.fBdtTHWReuZ91TfokLivsTQcxIuBXv7n3UV1kKnWMQs"
+      );
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const button = document.getElementById("button") as HTMLButtonElement;
+
+        button.addEventListener("click", () => {
+          const name = (document.getElementById("name") as HTMLInputElement).value;
+          const sender_email = (document.getElementById("email") as HTMLInputElement).value;
+          const message = (document.getElementById("message") as HTMLInputElement).value;
+
+          supabase
+            .from("Message")
+            .insert([{ name, sender_email, message }])
+            .then((res) => {
+              alert("Message sent successfully");
+            })
+        });
+      });
+    </script>
   </body>
 </html>
