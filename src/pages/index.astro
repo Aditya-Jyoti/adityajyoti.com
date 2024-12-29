@@ -11,7 +11,7 @@ import "../styles/global.css";
 import { getCollection } from "astro:content";
 
 const posts = (await getCollection("blog")).sort(
-  (a: { data: { pubDate: number; }; }, b: { data: { pubDate: number; }; }) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 ---
 
@@ -62,7 +62,7 @@ const posts = (await getCollection("blog")).sort(
             Susceptible to doing things just because they look "cool"</span
           >
 
-          <div class="relative flex gap-4 font-semibold text-sm mt-4">
+          <div class="relative flex justify-center lg:justify-start gap-4 font-semibold text-sm mt-4">
             <!-- button 1 -->
             <div class="relative">
               <div
@@ -174,8 +174,7 @@ const posts = (await getCollection("blog")).sort(
           <div class="flex flex-col">
             <span class="font-bold lg:text-2xl text-lg">. Public Speaking -</span>
             <span
-              >The rush of emotions i feel when I am on stage, talking to a
-              crowd is something I can not explain. Seeing everyone's eyes on
+              >Seeing everyone's eyes on
               me, listening to my every word and so much more gives me more
               adrenaline than any thing in the world.
             </span>

@@ -5,9 +5,11 @@ import Footer from "../../components/Footer.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
 import { getCollection } from "astro:content";
 import FormattedDate from "../../components/FormattedDate.astro";
+import "../../styles/global.css";
 
 const posts = (await getCollection("blog")).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  (a: { data: { pubDate: number } }, b: { data: { pubDate: number } }) =>
+    b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 ---
 
@@ -16,28 +18,34 @@ const posts = (await getCollection("blog")).sort(
   <head>
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
   </head>
-  <body>
+
+  <body
+    class="bg-background text-foreground flex flex-col min-h-screen lg:w-[60%] p-4 lg:p-0 mx-auto font-handwriting"
+  >
     <Header />
     <main>
       <section>
         <ul>
           {
-            posts.map((post) => (
-              <li>
-                <a href={`/blog/${post.id}/`}>
-                  <img
-                    width={720}
-                    height={360}
-                    src={post.data.heroImage}
-                    alt=""
-                  />
-                  <h4 class="title">{post.data.title}</h4>
-                  <p class="date">
-                    <FormattedDate date={post.data.pubDate} />
-                  </p>
-                </a>
-              </li>
-            ))
+            posts.map(
+              (post: {
+                id: any;
+                data: {
+                  title: unknown;
+                  pubDate: Date;
+                };
+              }) => (
+                <li>
+                  <a href={`/blog/${post.id}/`}>
+                    <img width={720} height={360} alt="" />
+                    <h4 class="title">{post.data.title}</h4>
+                    <p class="date">
+                      <FormattedDate date={post.data.pubDate} />
+                    </p>
+                  </a>
+                </li>
+              )
+            )
           }
         </ul>
       </section>
