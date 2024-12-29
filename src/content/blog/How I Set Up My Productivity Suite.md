@@ -23,7 +23,7 @@ Going with syncing calendars first because that's what gave me the most trouble 
 
 What you need is a [CalDav](https://help.one.com/hc/en-us/articles/115005586949-What-is-CalDAV) server. It's a shareable calendar which allows you to add or remove events and it gets synced for everyone with access to that caldav link.
 
-There are a lot out there for use (mentioned in [here](https://github.com/awesome-selfhosted/awesome-selfhosted?tab=readme-ov-file#calendar--contacts)) but I went ahead with [Radical](https://github.com/Kozea/Radicale) since it was quite popularly recommended in the reddit post I was reading.
+There are a lot out there for use (mentioned in [here](https://github.com/awesome-selfhosted/awesome-selfhosted?tab=readme-ov-file#calendar--contacts)) but I went ahead with [Radicale](https://github.com/Kozea/Radicale) since it was quite popularly recommended in the reddit post I was reading.
 
 Here is the `docker-compose.yml` file that I used to host this up
 

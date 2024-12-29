@@ -24,29 +24,57 @@ const posts = (await getCollection("blog")).sort(
   >
     <Header />
     <main>
+      <div class="text-3xl font-bold pt-4">Aditya Writes...</div>
+      <div class="lg:text-xl text-lg p-4">
+        I have always wanted to maintain a blog, a place where I could write
+        about what's happening in life and document the cool stuff I find. The
+        only issue is, is that I am hella lazy. But, I am going to try and keep
+        this blog updated with the cool stuff I find and the cool stuff I do.
+        So, here is my blog. Enjoy!
+      </div>
       <section>
-        <ul>
+        <div>
           {
             posts.map(
               (post: {
                 id: any;
                 data: {
-                  title: unknown;
+                  title: string;
                   pubDate: Date;
+                  description: string;
                 };
               }) => (
-                <li>
-                  <a href={`/blog/${post.id}/`}>
-                    <h4 class="title">{post.data.title}</h4>
-                    <p class="date">
-                      <FormattedDate date={post.data.pubDate} />
-                    </p>
-                  </a>
-                </li>
+                <div class="relative">
+                  <div
+                    class={`border-2 border-foreground absolute top-0 bg-background z-10 hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out left-0 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
+                  >
+                    <a
+                      href={`/blog/${post.id}/`}
+                      class="flex flex-col lg:h-44 h-72 gap-2 p-4"
+                    >
+                      <div class="lg:text-2xl text-lg font-bold">{post.data.title}</div>
+                      <div class="flex-grow lg:text-lg ">
+                        {post.data.description}
+                      </div>
+                      <div class="flex flex-col w-full items-end lg:text-lg">
+                        <div class="font-bold">
+                          <FormattedDate date={post.data.pubDate} />
+                        </div>
+                        <div class="text-sm">
+                          last updated on:
+                          <FormattedDate date={post.data.pubDate} />
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                  <div
+                    class={`border-2 border-foreground p-4 lg:h-44 h-72 bg-foreground translate-x-1 translate-y-2 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
+                  ></div>
+                </div>
               )
             )
           }
-        </ul>
+        </div>
       </section>
     </main>
     <Footer />

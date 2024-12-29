@@ -59,12 +59,12 @@ b {
 
 a {
   font-weight: bold;
-  color: var(--red);
+  color: rgb(152, 152, 26);
   transition: color 0.2s ease;
 }
 
 a:hover {
-  color: var(--purple);
+  color: rgb(211, 134, 155);
 }
 
 p {
