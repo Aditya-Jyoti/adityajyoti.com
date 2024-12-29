@@ -7,7 +7,7 @@ imgDesc: "My dashboard setup with calendar and todos"
 heroImage: "/blogs/post1-hero.png"
 ---
 
-I recently bought a [virtual private server](https://aws.amazon.com/what-is/vps/) (VPS) to experiment. Don't know what a virtual private server is? Don't worry I was in the same shoes just a while back. In simple terms a virtual private private server is like having a computer but it's managed by someone else. They provide you with internet and power. The catch? You can only access the computer through shell commands like `ssh`.
+I recently bought a [virtual private server](https://aws.amazon.com/what-is/vps/) (VPS) to experiment. Don't know what a virtual private server is? Don't worry I was in the same shoes just a while back. In simple terms a virtual private server is like having a computer but it's managed by someone else. They provide you with internet and power. The catch? You can only access the computer through shell commands like `ssh`.
 
 I have always wanted to maintain a common TODO list and Calendar between my PC and Mobile but I never found a good enough solution that did not rely on buying some extra "premium" software. Now that I had my own VPS and access to the [awesome selfhosted](https://github.com/awesome-selfhosted/awesome-selfhosted) list, I felt it was time to fix the problem.
 
