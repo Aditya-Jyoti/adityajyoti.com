@@ -2,6 +2,7 @@
 import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import ProjectCard from "../components/ProjectCard.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import "../styles/global.css";
 ---
@@ -41,7 +42,7 @@ import "../styles/global.css";
             <!-- button 1 -->
             <div class="relative">
               <div
-                class="flex items-center justify-center border-2 w-56 h-10 absolute top-0 left-0 z-10 bg-background border-foreground hover:translate-x-0.5 hover:translate-y-0.5 transition-all ease-in-out duration-300"
+                class="handdrawn-1 flex items-center justify-center border-2 w-56 h-10 absolute top-0 left-0 z-10 bg-background border-foreground hover:translate-x-0.5 hover:translate-y-0.5 transition-all ease-in-out duration-300"
               >
                 <a
                   href="https://linkedin.com/in/aditya-jyoti"
@@ -49,38 +50,84 @@ import "../styles/global.css";
                   class="mt-1 w-full text-center">LINKEDIN</a
                 >
               </div>
-              <div class="w-56 h-10 bg-foreground translate-x-1 translate-y-1">
+              <div class="handdrawn-1 w-56 h-10 bg-foreground translate-x-1 translate-y-1">
               </div>
             </div>
             <!-- button 1 -->
             <div class="relative">
               <div
-                class="flex items-center justify-center w-56 h-10 absolute top-0 left-0 z-10 text-background bg-foreground hover:translate-x-0.5 hover:translate-y-0.5 transition-all ease-in-out duration-300"
+                class="handdrawn-5 flex items-center justify-center w-56 h-10 absolute top-0 left-0 z-10 text-background bg-foreground hover:translate-x-0.5 hover:translate-y-0.5 transition-all ease-in-out duration-300"
               >
                 <a
                   href="https://github.com/aditya-jyoti"
                   target="_blank"
-                  class="mt-1 w-full text-center">GITHUB</a
+                  class="handdrawn-3 mt-1 w-full text-center">GITHUB</a
                 >
               </div>
               <div
-                class="w-56 h-10 bg-background border-2 border-foreground translate-x-1 translate-y-1"
+                class="handdrawn-5 w-56 h-10 bg-background border-2 border-foreground translate-x-1 translate-y-1"
               >
               </div>
             </div>
           </div>
         </div>
-        <div class="w-full flex justify-end relative">
+        <div class="w-[50%]">
           <img
-            src="/me-bg.jpg"
+            src="/me-sketch.png"
             alt="my photo"
-            class="w-56 h-56 rounded-full border-2 absolute z-10 border-foreground"
+            class="w-64 h-64 p-2 scale-125"
           />
-          <div
-            class="w-56 h-56 bg-foreground rounded-full translate-x-1 translate-y-1"
-          >
-          </div>
         </div>
+      </section>
+
+      <!-- projects -->
+      <section id="projects" class="flex flex-col gap-4">
+        <div class="flex flex-col w-full items-end">
+          <span class="text-4xl font-bold">Projects</span>
+          <div class="w-24 h-1 rounded-full bg-foreground"></div>
+        </div>
+
+        <!-- project card -->
+        <div class="flex justify-around w-full">
+          <ProjectCard
+            handdrawn_style="handdrawn-1"
+            title="Recruitment Site"
+            description="A supabase powered recruitment side handling the recruitment of over 800 people for IEEE Computer Society"
+            link="https://github.com/ComputerSocietyVITC/Recruitment-Site-Frontend/"
+          />
+          <ProjectCard
+            handdrawn_style="handdrawn-3"
+            title="Hono API Template"
+            description="An easy to setup REST API template using Hono. Uses prisma, postgresql and minio. Comes with RBAC and deployment options."
+            link="https://github.com/Aditya-Jyoti/Hono-API-Template/"
+          />
+          <ProjectCard
+            handdrawn_style="handdrawn-4"
+            title="Custom Shell"
+            description="A work in progress custom shell written in C++ made to learn the workings of linux commands."
+            link="https://github.com/Aditya-Jyoti/Custom-Shell"
+          />
+        </div>
+
+        <div class="text-xl my-4">
+          you can find more projects over at my <a
+            href="https://github.com/aditya-jyoti"
+            target="_blank"
+            class="underline underline-offset-2">github</a
+          >...
+        </div>
+      </section>
+
+      <!-- what i do -->
+      <section id="whatido">
+        <div class="flex flex-col w-full">
+          <span class="text-4xl font-bold">What I Do</span>
+          <div class="w-24 h-1 rounded-full bg-foreground"></div>
+        </div>
+
+        <section>
+          <div></div>
+        </section>
       </section>
     </section>
 

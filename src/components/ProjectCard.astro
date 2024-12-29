@@ -1,0 +1,39 @@
+---
+import { string } from "astro:schema";
+
+interface Props {
+  title: string;
+  description: string;
+  link: string;
+  handdrawn_style: string;
+}
+
+const { title, description, link, handdrawn_style } = Astro.props;
+---
+
+<section class="relative">
+  <!-- content -->
+  <div
+    class={`${handdrawn_style} w-64 h-56 bg-background border-2 border-foreground flex flex-col absolute top-0 left-0 z-20 hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out p-2`}
+  >
+    <div class="flex-grow">
+      <div>
+        <span class="text-xl font-bold">{title}</span>
+        <div class="w-20 h-0.5 rounded-full bg-foreground"></div>
+      </div>
+      <div class="py-2">{description}</div>
+    </div>
+
+    <div class="w-full flex justify-end text-lg">
+      <a href={link} target="_blank" class="hover:underline underline-offset-2"
+        >project link</a
+      >
+    </div>
+  </div>
+
+  <!-- shadow -->
+  <div
+    class={`${handdrawn_style} w-64 h-56 bg-foreground border-2 border-foreground translate-x-1 translate-y-1`}
+  >
+  </div>
+</section>
