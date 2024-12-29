@@ -5,42 +5,59 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 
+import "../styles/global.css";
+import "../styles/post.css";
+
 type Props = CollectionEntry<"blog">["data"];
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, imgDesc } = Astro.props;
 ---
 
 <html lang="en">
   <head>
     <BaseHead title={title} description={description} />
+
   </head>
 
-  <body>
+  <body
+    class="bg-background flex flex-col min-h-screen lg:w-[60%] p-4 lg:p-0 mx-auto font-handwriting"
+  >
     <Header />
     <main>
       <article>
-        <div class="hero-image">
-          {
-            heroImage && (
-              <img width={1020} height={510} src={heroImage} alt="" />
-            )
-          }
-        </div>
-        <div class="prose">
-          <div class="title">
-            <div class="date">
+        <div class="flex flex-col">
+          <div class="text-3xl font-bold mt-4">{title}</div>
+          <div class="w-72 h-1 bg-foreground rounded-full"></div>
+          <div class="mt-2 text-xl">by <strong>Aditya Jyoti</strong></div>
+
+          <div class="flex flex-col w-full items-end">
+            <div class="font-bold">
               <FormattedDate date={pubDate} />
-              {
-                updatedDate && (
-                  <div class="last-updated-on">
-                    Last updated on <FormattedDate date={updatedDate} />
-                  </div>
-                )
-              }
             </div>
-            <h1>{title}</h1>
-            <hr />
+            {
+              updatedDate && (
+                <div class="last-updated-on">
+                  Last updated on <FormattedDate date={updatedDate} />
+                </div>
+              )
+            }
           </div>
+        </div>
+        {
+          heroImage && (
+            <div class="relative p-6">
+              <div class="handdrawn-5 absolute z-10">
+                <img src={heroImage} alt="" class="handdrawn-5" />
+              </div>
+              <div class="handdrawn-5 bg-foreground  translate-x-4 translate-y-4">
+                <img src={heroImage} alt="" class="handdrawn-5 opacity-0" />
+              </div>
+            </div>
+
+            <div class="text-lg flex w-full justify-center mt-2" >{imgDesc}</div>
+          )
+        }
+        <div class="prose mt-4">
           <slot />
         </div>
       </article>

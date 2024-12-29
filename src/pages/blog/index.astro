@@ -8,7 +8,7 @@ import FormattedDate from "../../components/FormattedDate.astro";
 import "../../styles/global.css";
 
 const posts = (await getCollection("blog")).sort(
-  (a: { data: { pubDate: number } }, b: { data: { pubDate: number } }) =>
+  (a: { data: { pubDate: Date } }, b: { data: { pubDate: Date } }) =>
     b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 ---
@@ -37,7 +37,6 @@ const posts = (await getCollection("blog")).sort(
               }) => (
                 <li>
                   <a href={`/blog/${post.id}/`}>
-                    <img width={720} height={360} alt="" />
                     <h4 class="title">{post.data.title}</h4>
                     <p class="date">
                       <FormattedDate date={post.data.pubDate} />
