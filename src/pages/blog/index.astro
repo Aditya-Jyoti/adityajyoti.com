@@ -33,7 +33,7 @@ const posts = (await getCollection("blog")).sort(
         So, here is my blog. Enjoy!
       </div>
       <section>
-        <div>
+        <div class="flex flex-col gap-4">
           {
             posts.map(
               (post: {
@@ -42,17 +42,20 @@ const posts = (await getCollection("blog")).sort(
                   title: string;
                   pubDate: Date;
                   description: string;
+                  updatedDate?: Date;
                 };
               }) => (
                 <div class="relative">
                   <div
-                    class={`border-2 border-foreground absolute top-0 bg-background z-10 hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out left-0 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
+                    class={`border-2 border-foreground w-full absolute top-0 bg-background z-10 hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out left-0 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
                   >
                     <a
                       href={`/blog/${post.id}/`}
                       class="flex flex-col lg:h-44 h-72 gap-2 p-4"
                     >
-                      <div class="lg:text-2xl text-lg font-bold">{post.data.title}</div>
+                      <div class="lg:text-2xl text-lg font-bold">
+                        {post.data.title}
+                      </div>
                       <div class="flex-grow lg:text-lg ">
                         {post.data.description}
                       </div>
@@ -62,14 +65,14 @@ const posts = (await getCollection("blog")).sort(
                         </div>
                         <div class="text-sm">
                           last updated on:
-                          <FormattedDate date={post.data.pubDate} />
+                          <FormattedDate date={post.data.updatedDate || post.data.pubDate} />
                         </div>
                       </div>
                     </a>
                   </div>
                   <div
                     class={`border-2 border-foreground p-4 lg:h-44 h-72 bg-foreground translate-x-1 translate-y-2 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
-                  ></div>
+                  />
                 </div>
               )
             )
