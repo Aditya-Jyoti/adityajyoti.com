@@ -1,0 +1,22 @@
+<html lang="en">
+  <head>
+    <meta http-equiv="refresh" content="0;url=/" />
+  </head>
+  <body>
+    <script>
+      // Trigger the download
+      const resumeUrl = "/resume.pdf";
+      const link = document.createElement("a");
+      link.href = resumeUrl;
+      link.download = "adityajyoti_resume.pdf"; 
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Redirect to the home page
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
+    </script>
+  </body>
+</html>

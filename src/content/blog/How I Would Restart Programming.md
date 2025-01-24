@@ -2,6 +2,7 @@
 title: "How I Would Restart Programming"
 description: "If I forgot everything and had to start from scratch, how would I restart programming."
 pubDate: "Jan 14 2025"
+updatedDate: "Jan 25, 2025"
 imgDesc: "My current github (original id github.com/SHR3KtheGR3AT)"
 heroImage: "/blogs/post2-hero.png"
 ---
@@ -26,7 +27,7 @@ Then come _9th grade_ I start out with my first actual programming language **[P
 
 I would code one day and drop it for a week or two, only to come back and make something new and leave the thing I was working on earlier.
 
-Whenever I would face a problem or big that was just a bit too difficult I would not push through and try to solve it rather I would just drop it and work on something easier, only to forget the project I started.
+Whenever I would face a problem or bug that was just a bit too difficult I would not push through and try to solve it rather I would just drop it and work on something easier, only to forget the project I started.
 
 ### No direction
 
