@@ -36,13 +36,17 @@ const posts = (await getCollection("blog")).sort(
         id="root"
         class="flex lg:flex-row flex-col justify-between items-center lg:w-[90%] mx-auto lg:py-12"
       >
-
         <div class="w-full lg:hidden justify-center flex">
           <img src="/me-sketch.png" alt="my photo" class="h-64 p-2" />
         </div>
-        <div class="flex flex-col lg:text-xl text-lg lg:w-fit w-full lg:text-left text-center">
-          <span class="lg:text-4xl text-2xl font-black">Hey! I'm Aditya Jyoti</span>
-          <span class="lg:text-lg text-sm flex items-center lg:justify-start justify-center"
+        <div
+          class="flex flex-col lg:text-xl text-lg lg:w-fit w-full lg:text-left text-center"
+        >
+          <span class="lg:text-4xl text-2xl font-black"
+            >Hey! I'm Aditya Jyoti</span
+          >
+          <span
+            class="lg:text-lg text-sm flex items-center lg:justify-start justify-center"
             >breaking things since... <img
               src="/shushing-face.svg"
               alt="sush emoji"
@@ -55,7 +59,9 @@ const posts = (await getCollection("blog")).sort(
             Susceptible to doing things just because they look "cool"</span
           >
 
-          <div class="relative flex justify-center lg:justify-start gap-4 font-semibold text-sm mt-4">
+          <div
+            class="relative flex justify-center lg:justify-start gap-4 font-semibold text-sm mt-4"
+          >
             <!-- button 1 -->
             <div class="relative">
               <div
@@ -165,11 +171,12 @@ const posts = (await getCollection("blog")).sort(
             </span>
           </div>
           <div class="flex flex-col">
-            <span class="font-bold lg:text-2xl text-lg">. Public Speaking -</span>
+            <span class="font-bold lg:text-2xl text-lg"
+              >. Public Speaking -</span
+            >
             <span
-              >Seeing everyone's eyes on
-              me, listening to my every word and so much more gives me more
-              adrenaline than any thing in the world.
+              >Seeing everyone's eyes on me, listening to my every word and so
+              much more gives me more adrenaline than any thing in the world.
             </span>
           </div>
         </section>
@@ -177,36 +184,53 @@ const posts = (await getCollection("blog")).sort(
 
       <!-- blog  -->
       <section id="blog" class="flex flex-col gap-4 -mt-4">
-        <div class="flex flex-col w-full items-end"> 
+        <div class="flex flex-col w-full items-end">
           <span class="lg:text-4xl text-2xl font-bold">I Also Write</span>
           <div class="w-32 h-1 rounded-full bg-foreground"></div>
         </div>
         <!-- content -->
         <section class="flex flex-col gap-4">
           {
-            posts.slice(0, 2).map((post: { data: { title: unknown; description: unknown; pubDate: Date; }; id: any; }) => (
-            <div class="relative" >
-                <div
-                  class={`flex flex-col gap-4 w-full hover:translate-x-0.5 hover:translate-y-0.5 transition-all ease-in-out duration-300 border-2 border-foreground bg-background p-4 lg:h-48 h-[14.5rem] absolute z-10 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
-                >
-                  <span class="lg:text-2xl text-lg font-bold">{post.data.title}</span>
-                  <span class="lg:text-xl text-sm flex-grow">{post.data.description}</span>
-                  <div class="w-full flex lg:text-xl text-lg justify-between">
-                    <FormattedDate date={post.data.pubDate} />
-                    <a href={`/blog/${post.id}`} class="hover:underline underline-offset-2" target="_blank">read here</a>
+            posts
+              .slice(0, 2)
+              .map(
+                (post: {
+                  data: { title: unknown; description: unknown; pubDate: Date };
+                  id: any;
+                }) => (
+                  <div class="relative">
+                    <div
+                      class={`flex flex-col gap-4 w-full hover:translate-x-0.5 hover:translate-y-0.5 transition-all ease-in-out duration-300 border-2 border-foreground bg-background p-4 lg:h-48 h-[14.5rem] absolute z-10 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
+                    >
+                      <span class="lg:text-2xl text-lg font-bold">
+                        {post.data.title}
+                      </span>
+                      <span class="lg:text-xl text-sm flex-grow">
+                        {post.data.description}
+                      </span>
+                      <div class="w-full flex lg:text-xl text-lg justify-between">
+                        <FormattedDate date={post.data.pubDate} />
+                        <a
+                          href={`/blog/${post.id}`}
+                          class="hover:underline underline-offset-2"
+                          target="_blank"
+                        >
+                          read here
+                        </a>
+                      </div>
+                    </div>
+                    <div
+                      class={`flex flex-col gap-4 w-full border-2 bg-foreground border-foreground p-4 lg:h-48 h-[14.5rem] translate-x-1 translate-y-1 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
+                    />
                   </div>
-                </div>
-                <div
-                  class={`flex flex-col gap-4 w-full border-2 bg-foreground border-foreground p-4 lg:h-48 h-[14.5rem] translate-x-1 translate-y-1 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
-                >
-                </div>
-              </div>
-            ))
+                )
+              )
           }
         </section>
 
         <div class="lg:text-xl my-2">
-          I maintain (try) a blog called <i class="font-bold">Aditya Writes</i>. You can check more of my posts <a
+          I maintain (try) a blog called <i class="font-bold">Aditya Writes</i>.
+          You can check more of my posts <a
             href="/blog"
             target="_blank"
             class="underline underline-offset-2">here</a
@@ -214,28 +238,35 @@ const posts = (await getCollection("blog")).sort(
         </div>
       </section>
 
-      <!-- contact  -->
-      <section id="contact" class="flex flex-col gap-4" >
+      <!-- contact -->
+      <section id="contact" class="flex flex-col gap-4">
         <div class="flex flex-col w-full">
-          <span class="lg:text-4xl text-2xl font-bold">Talk To Me (please)</span>
+          <span class="lg:text-4xl text-2xl font-bold">Talk To Me (please)</span
+          >
           <div class="lg:w-44 w-24 h-1 rounded-full bg-foreground"></div>
         </div>
 
-        <div class="lg:text-xl text-lg" >
-          You can send me an email at <a href="mailto:website@adityajyoti.com">
-            <strong>website@adityajyoti.com</strong></a> 
-            and I will respond promptly, or you can leave a message here. 
+        <div class="lg:text-xl text-lg">
+          You can send me an email at
+          <a href="mailto:website@adityajyoti.com"
+            ><strong>website@adityajyoti.com</strong></a
+          >
+          and I will respond promptly, or you can leave a message here.
         </div>
 
-        <section class="flex flex-col gap-4 relative">
-          <div class="flex gap-4" >
+        <!-- 👇 Formspree form starts here -->
+        <form
+          action="https://formspree.io/f/xeozewvd"
+          method="POST"
+          class="flex flex-col gap-4 relative"
+        >
+          <div class="flex gap-4">
             <!-- name -->
             <div class="relative w-full">
               <span class="text-xl">name </span>
               <div class="w-full">
                 <input
                   required
-                  id="name"
                   type="text"
                   name="name"
                   placeholder="your name..."
@@ -243,7 +274,6 @@ const posts = (await getCollection("blog")).sort(
                 />
                 <input
                   type="text"
-                  name="name"
                   placeholder="Name"
                   readonly
                   class="p-2 border-2 w-full border-foreground bg-foreground translate-x-1 translate-y-1 handdrawn-3 text-foreground placeholder-foreground"
@@ -257,16 +287,14 @@ const posts = (await getCollection("blog")).sort(
               <div class="w-full">
                 <input
                   required
-                  id="email"
                   type="email"
-                  name="name"
+                  name="email"
                   placeholder="your email..."
                   class="p-2 border-2 hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out w-full absolute z-10 border-foreground bg-background handdrawn-5 selection:border-foreground text-foreground placeholder-foreground"
                 />
                 <input
                   type="email"
-                  name="name"
-                  placeholder="Name"
+                  placeholder="Email"
                   readonly
                   class="p-2 border-2 w-full border-foreground bg-foreground translate-x-1 translate-y-1 handdrawn-3 text-foreground placeholder-foreground"
                 />
@@ -274,65 +302,36 @@ const posts = (await getCollection("blog")).sort(
             </div>
           </div>
 
+          <!-- message -->
           <div class="relative w-full">
             <span class="text-xl">message </span>
             <div class="w-full">
               <textarea
                 required
-                id="message"
-                name="name"
+                name="message"
                 rows="4"
                 placeholder="Please write your message (I read everything)..."
                 class="p-2 border-2 hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out w-full absolute z-10 border-foreground bg-background handdrawn-1 resize-none selection:border-foreground text-foreground placeholder-foreground"
-              />
+              ></textarea>
               <textarea
-                name="name"
-                placeholder="Name"
+                placeholder="Message"
                 rows="4"
                 readonly
                 class="p-2 border-2 w-full border-foreground resize-none bg-foreground translate-x-1 translate-y-1 handdrawn-3 text-foreground placeholder-foreground"
-              />
+              ></textarea>
             </div>
           </div>
 
           <button
-            id="button"
+            type="submit"
             class="p-2 bg-foreground text-background font-bold handdrawn-4 hover:bg-background hover:text-foreground transition-all duration-300 ease-in-out border-2 border-foreground"
           >
             Send
           </button>
-        </section>
-
+        </form>
       </section>
-
     </section>
 
     <Footer />
-
-    <script>
-      import { createClient } from "@supabase/supabase-js";
-
-      const supabase = createClient(
-        "https://teonperjhrienhvqqkfn.supabase.co",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlb25wZXJqaHJpZW5odnFxa2ZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU0NzQwMzEsImV4cCI6MjA1MTA1MDAzMX0.fBdtTHWReuZ91TfokLivsTQcxIuBXv7n3UV1kKnWMQs"
-      );
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const button = document.getElementById("button") as HTMLButtonElement;
-
-        button.addEventListener("click", () => {
-          const name = (document.getElementById("name") as HTMLInputElement).value;
-          const sender_email = (document.getElementById("email") as HTMLInputElement).value;
-          const message = (document.getElementById("message") as HTMLInputElement).value;
-
-          supabase
-            .from("Message")
-            .insert([{ name, sender_email, message }])
-            .then((res) => {
-              alert("Message sent successfully");
-            })
-        });
-      });
-    </script>
   </body>
 </html>
