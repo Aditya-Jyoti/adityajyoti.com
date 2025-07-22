@@ -5,6 +5,7 @@ export default {
     extend: {
       fontFamily: {
         handwriting: ["Excalifont", "sans-serif"],
+        blog: ["Roboto", "sans-serif"],
       },
       colors: {
         background: "#fbf1c7",
