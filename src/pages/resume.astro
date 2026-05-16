@@ -1,22 +1,30 @@
+---
+const resumeUrl = "/resume.pdf";
+---
+
 <html lang="en">
   <head>
-    <meta http-equiv="refresh" content="0;url=/" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Downloading résumé — Aditya Jyoti</title>
+    <link rel="canonical" href="https://adityajyoti.com/" />
   </head>
-  <body>
-    <script>
-      // Trigger the download
-      const resumeUrl = "/resume.pdf";
-      const link = document.createElement("a");
-      link.href = resumeUrl;
-      link.download = "adityajyoti_resume.pdf"; 
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Redirect to the home page
+  <body style="font-family: system-ui, sans-serif; max-width: 36rem; margin: 4rem auto; padding: 0 1rem; line-height: 1.6;">
+    <p>
+      Downloading résumé… if nothing happens,
+      <a href={resumeUrl} download="adityajyoti_resume.pdf">click here</a>.
+    </p>
+    <script is:inline define:vars={{ resumeUrl }}>
+      const a = document.createElement("a");
+      a.href = resumeUrl;
+      a.download = "adityajyoti_resume.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
       setTimeout(() => {
-        window.location.href = "/";
-      }, 1000);
+        window.location.replace("/");
+      }, 600);
     </script>
   </body>
 </html>

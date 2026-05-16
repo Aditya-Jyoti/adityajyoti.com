@@ -18,11 +18,42 @@ const posts = (await getCollection("blog")).sort(
 <!doctype html>
 <html lang="en">
   <head>
-    <link rel="icon" type="image" href="/me-sketch.png" />
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    <BaseHead
+      title={SITE_TITLE}
+      description={SITE_DESCRIPTION}
+      preloadImage="/me-sketch.png"
+      preloadImageWebp="/me-sketch.webp"
+    />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "https://adityajyoti.com/#person",
+            name: "Aditya Jyoti",
+            url: "https://adityajyoti.com",
+            image: "https://adityajyoti.com/me-sketch.png",
+            sameAs: [
+              "https://github.com/aditya-jyoti",
+              "https://linkedin.com/in/aditya-jyoti",
+            ],
+            email: "mailto:website@adityajyoti.com",
+            jobTitle: "Software Engineer",
+            description: SITE_DESCRIPTION,
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://adityajyoti.com/#website",
+            url: "https://adityajyoti.com",
+            name: SITE_TITLE,
+            description: SITE_DESCRIPTION,
+            publisher: { "@id": "https://adityajyoti.com/#person" },
+            inLanguage: "en",
+          },
+        ],
+      })}
     />
   </head>
   <body
@@ -37,14 +68,25 @@ const posts = (await getCollection("blog")).sort(
         class="flex lg:flex-row flex-col justify-between items-center lg:w-[90%] mx-auto lg:py-12"
       >
         <div class="w-full lg:hidden justify-center flex">
-          <img src="/me-sketch.png" alt="my photo" class="h-64 p-2" />
+          <picture>
+            <source srcset="/me-sketch.webp" type="image/webp" />
+            <img
+              src="/me-sketch.png"
+              alt="Sketch of Aditya Jyoti"
+              width="256"
+              height="321"
+              fetchpriority="high"
+              decoding="async"
+              class="h-64 w-auto p-2"
+            />
+          </picture>
         </div>
         <div
           class="flex flex-col lg:text-xl text-lg lg:w-fit w-full lg:text-left text-center"
         >
-          <span class="lg:text-4xl text-2xl font-black"
-            >Hey! I'm Aditya Jyoti</span
-          >
+          <h1 class="lg:text-4xl text-2xl font-black">
+            Hey! I'm Aditya Jyoti
+          </h1>
           <span
             class="lg:text-lg text-sm flex items-center lg:justify-start justify-center"
             >breaking things since... <img
@@ -97,14 +139,25 @@ const posts = (await getCollection("blog")).sort(
           </div>
         </div>
         <div class="w-full scale-125 lg:flex justify-center hidden">
-          <img src="/me-sketch.png" alt="my photo" class="h-64 p-2" />
+          <picture>
+            <source srcset="/me-sketch.webp" type="image/webp" />
+            <img
+              src="/me-sketch.png"
+              alt="Sketch of Aditya Jyoti"
+              width="256"
+              height="321"
+              fetchpriority="high"
+              decoding="async"
+              class="h-64 w-auto p-2"
+            />
+          </picture>
         </div>
       </section>
 
       <!-- projects -->
       <section id="projects" class="flex flex-col gap-4">
         <div class="flex flex-col w-full items-end">
-          <span class="lg:text-4xl text-2xl font-bold">Projects</span>
+          <h2 class="lg:text-4xl text-2xl font-bold">Projects</h2>
           <div class="lg:w-24 w-12 h-1 rounded-full bg-foreground"></div>
         </div>
 
@@ -149,7 +202,7 @@ const posts = (await getCollection("blog")).sort(
       <!-- what i do -->
       <section id="whatido">
         <div class="flex flex-col w-full">
-          <span class="lg:text-4xl text-2xl font-bold">What I Do</span>
+          <h2 class="lg:text-4xl text-2xl font-bold">What I Do</h2>
           <div class="lg:w-24 w-12 h-1 rounded-full bg-foreground"></div>
         </div>
 
@@ -185,7 +238,7 @@ const posts = (await getCollection("blog")).sort(
       <!-- blog  -->
       <section id="blog" class="flex flex-col gap-4 -mt-4">
         <div class="flex flex-col w-full items-end">
-          <span class="lg:text-4xl text-2xl font-bold">I Also Write</span>
+          <h2 class="lg:text-4xl text-2xl font-bold">I Also Write</h2>
           <div class="w-32 h-1 rounded-full bg-foreground"></div>
         </div>
         <!-- content -->
@@ -241,8 +294,7 @@ const posts = (await getCollection("blog")).sort(
       <!-- contact -->
       <section id="contact" class="flex flex-col gap-4">
         <div class="flex flex-col w-full">
-          <span class="lg:text-4xl text-2xl font-bold">Talk To Me (please)</span
-          >
+          <h2 class="lg:text-4xl text-2xl font-bold">Talk To Me (please)</h2>
           <div class="lg:w-44 w-24 h-1 rounded-full bg-foreground"></div>
         </div>
 
