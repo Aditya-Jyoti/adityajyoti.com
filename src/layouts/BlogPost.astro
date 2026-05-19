@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import type { MarkdownHeading } from "astro";
 import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -8,14 +9,25 @@ import FormattedDate from "../components/FormattedDate.astro";
 import "../styles/global.css";
 import "../styles/post.css";
 
-type Props = CollectionEntry<"blog">["data"];
+type Props = CollectionEntry<"blog">["data"] & {
+  headings?: MarkdownHeading[];
+};
 
-const { title, description, pubDate, updatedDate, heroImage, imgDesc } =
-  Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  heroImage,
+  imgDesc,
+  headings = [],
+} = Astro.props;
 
 const heroWebp = heroImage
   ? heroImage.replace(/\.(png|jpe?g)$/i, ".webp")
   : undefined;
+
+const tocItems = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 ---
 
 <html lang="en">
@@ -30,6 +42,13 @@ const heroWebp = heroImage
       preloadImage={heroImage}
       preloadImageWebp={heroWebp}
     />
+    <script is:inline>
+      try {
+        if (localStorage.getItem("blog-font") === "sketch") {
+          document.documentElement.classList.add("font-sketch");
+        }
+      } catch (e) {}
+    </script>
   </head>
 
   <body
@@ -37,57 +56,211 @@ const heroWebp = heroImage
   >
     <Header />
     <main class="flex-1 w-full">
-      <article>
-        <header class="mt-6 mb-6">
-          <h1 class="font-bold leading-tight tracking-tight text-3xl lg:text-4xl">
-            {title}
-          </h1>
-          <div class="w-24 h-1 bg-foreground rounded-full mt-3"></div>
+      <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_220px] lg:gap-10">
+        <article class="min-w-0">
+          <header class="mt-6 mb-6">
+            <h1
+              class="font-bold leading-tight tracking-tight text-3xl lg:text-4xl"
+            >
+              {title}
+            </h1>
+            <div class="w-24 h-1 bg-foreground rounded-full mt-3"></div>
 
-          <div class="mt-3 text-xs lg:text-sm opacity-70 flex flex-wrap gap-x-3 gap-y-1">
-            <span>
-              Published <FormattedDate date={pubDate} />
-            </span>
-            {
-              updatedDate && updatedDate.valueOf() !== pubDate.valueOf() && (
+            <div
+              class="mt-3 flex items-center justify-between gap-3 flex-wrap"
+            >
+              <div
+                class="text-xs lg:text-sm opacity-70 flex flex-wrap gap-x-3 gap-y-1"
+              >
                 <span>
-                  · Updated <FormattedDate date={updatedDate} />
+                  Published <FormattedDate date={pubDate} />
                 </span>
+                {
+                  updatedDate &&
+                    updatedDate.valueOf() !== pubDate.valueOf() && (
+                      <span>
+                        · Updated <FormattedDate date={updatedDate} />
+                      </span>
+                    )
+                }
+              </div>
+
+              <button
+                type="button"
+                aria-label="Toggle blog font"
+                title="Toggle font"
+                class="font-toggle-btn font-handwriting lg:hidden flex items-center justify-center gap-1.5 text-xs border-2 border-foreground bg-background px-2.5 py-1 handdrawn-2 hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out"
+              >
+                <span>Aa</span>
+                <span class="font-toggle-label font-bold">readable</span>
+              </button>
+            </div>
+          </header>
+
+          {
+            heroImage && (
+              <figure class="my-6">
+                <picture>
+                  {heroWebp && <source srcset={heroWebp} type="image/webp" />}
+                  <img
+                    src={heroImage}
+                    alt={imgDesc || title}
+                    width="1200"
+                    height="630"
+                    loading="eager"
+                    decoding="async"
+                    fetchpriority="high"
+                    class="w-full h-auto rounded-xl border border-foreground/15"
+                  />
+                </picture>
+                {imgDesc && (
+                  <figcaption class="text-center text-sm lg:text-base mt-2 italic opacity-70">
+                    {imgDesc}
+                  </figcaption>
+                )}
+              </figure>
+            )
+          }
+
+          <div class="prose">
+            <slot />
+          </div>
+        </article>
+
+        <aside class="hidden lg:block">
+          <div
+            class="toc-sticky sticky top-4 mt-6 flex flex-col gap-4"
+          >
+            <div class="relative shrink-0">
+              <button
+                type="button"
+                aria-label="Toggle blog font"
+                class="font-toggle-btn font-handwriting relative z-10 flex items-center justify-center gap-2 w-full text-sm border-2 border-foreground bg-background hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out px-3 py-2 handdrawn-2"
+              >
+                <span>font:</span>
+                <span class="font-toggle-label font-bold">readable</span>
+              </button>
+              <div
+                class="absolute inset-0 border-2 border-foreground bg-foreground translate-x-1 translate-y-1 handdrawn-2"
+              >
+              </div>
+            </div>
+
+            {
+              tocItems.length > 0 && (
+                <nav
+                  class="toc font-handwriting flex-1 min-h-0 border-2 border-foreground bg-background p-4 handdrawn-3 overflow-y-auto"
+                  aria-label="Table of contents"
+                >
+                  <div class="font-bold text-lg mb-2">contents</div>
+                  <ul class="toc-list">
+                    {tocItems.map((h) => (
+                      <li class={`toc-item toc-depth-${h.depth}`}>
+                        <a href={`#${h.slug}`} class="toc-link">
+                          {h.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
               )
             }
           </div>
-        </header>
-
-        {
-          heroImage && (
-            <figure class="my-6">
-              <picture>
-                {heroWebp && <source srcset={heroWebp} type="image/webp" />}
-                <img
-                  src={heroImage}
-                  alt={imgDesc || title}
-                  width="1200"
-                  height="630"
-                  loading="eager"
-                  decoding="async"
-                  fetchpriority="high"
-                  class="w-full h-auto rounded-xl border border-foreground/15"
-                />
-              </picture>
-              {imgDesc && (
-                <figcaption class="text-center text-sm lg:text-base mt-2 italic opacity-70">
-                  {imgDesc}
-                </figcaption>
-              )}
-            </figure>
-          )
-        }
-
-        <div class="prose">
-          <slot />
-        </div>
-      </article>
+        </aside>
+      </div>
     </main>
     <Footer />
+
+    <script>
+      const html = document.documentElement;
+      const btns = document.querySelectorAll<HTMLButtonElement>(
+        ".font-toggle-btn"
+      );
+      const labels = document.querySelectorAll<HTMLElement>(
+        ".font-toggle-label"
+      );
+
+      const apply = (mode: "readable" | "sketch") => {
+        html.classList.toggle("font-sketch", mode === "sketch");
+        labels.forEach((l) => (l.textContent = mode));
+      };
+
+      try {
+        apply(
+          localStorage.getItem("blog-font") === "sketch" ? "sketch" : "readable"
+        );
+      } catch {}
+
+      btns.forEach((btn) =>
+        btn.addEventListener("click", () => {
+          const next = html.classList.contains("font-sketch")
+            ? "readable"
+            : "sketch";
+          try {
+            localStorage.setItem("blog-font", next);
+          } catch {}
+          apply(next);
+        })
+      );
+
+      // Size the sticky sidebar so its bottom sits at the viewport bottom.
+      // Cap at the pinned-state max so it doesn't keep growing once the
+      // sticky element is released near the bottom of its parent.
+      const stickyEls =
+        document.querySelectorAll<HTMLElement>(".toc-sticky");
+      const STICKY_TOP = 16;
+      const BOTTOM_GAP = 16;
+      const updateStickyHeight = () => {
+        stickyEls.forEach((el) => {
+          const top = el.getBoundingClientRect().top;
+          const pinnedMax = window.innerHeight - STICKY_TOP - BOTTOM_GAP;
+          const available =
+            top >= STICKY_TOP
+              ? window.innerHeight - top - BOTTOM_GAP
+              : pinnedMax;
+          el.style.height = available > 160 ? `${available}px` : "";
+        });
+      };
+      if (stickyEls.length > 0) {
+        updateStickyHeight();
+        window.addEventListener("scroll", updateStickyHeight, {
+          passive: true,
+        });
+        window.addEventListener("resize", updateStickyHeight);
+      }
+
+      // TOC scroll-spy
+      const links =
+        document.querySelectorAll<HTMLAnchorElement>(".toc-link");
+      const idToLink = new Map<string, HTMLAnchorElement>();
+      links.forEach((a) => {
+        const id = a.getAttribute("href")?.slice(1);
+        if (id) idToLink.set(id, a);
+      });
+      const targets = Array.from(idToLink.keys())
+        .map((id) => document.getElementById(id))
+        .filter((el): el is HTMLElement => el !== null);
+
+      const setActive = (id: string | null) => {
+        idToLink.forEach((a) => a.classList.remove("is-active"));
+        if (id && idToLink.has(id)) idToLink.get(id)!.classList.add("is-active");
+      };
+
+      if (targets.length > 0 && "IntersectionObserver" in window) {
+        const visible = new Set<string>();
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) visible.add(e.target.id);
+              else visible.delete(e.target.id);
+            });
+            const firstVisible = targets.find((t) => visible.has(t.id));
+            if (firstVisible) setActive(firstVisible.id);
+          },
+          { rootMargin: "0px 0px -70% 0px", threshold: 0 }
+        );
+        targets.forEach((t) => observer.observe(t));
+      }
+    </script>
   </body>
 </html>
