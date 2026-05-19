@@ -11,6 +11,11 @@ const posts = (await getCollection("blog")).sort(
   (a: { data: { pubDate: Date } }, b: { data: { pubDate: Date } }) =>
     b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
+
+const styles = posts.map(() => ({
+  card: Math.floor(Math.random() * 5) + 1,
+  shadow: Math.floor(Math.random() * 5) + 1,
+}));
 ---
 
 <!doctype html>
@@ -23,7 +28,7 @@ const posts = (await getCollection("blog")).sort(
     class="bg-background text-foreground flex flex-col min-h-screen lg:w-[60%] p-4 lg:p-0 mx-auto font-handwriting"
   >
     <Header />
-    <main>
+    <main class="flex-grow">
       <div class="text-3xl font-bold pt-4">Aditya Writes...</div>
       <div class="lg:text-xl text-lg p-4">
         I have always wanted to maintain a blog, a place where I could write
@@ -32,54 +37,110 @@ const posts = (await getCollection("blog")).sort(
         this blog updated with the cool stuff I find and the cool stuff I do.
         So, here is my blog. Enjoy!
       </div>
+
+      <!-- search -->
+      <div class="relative h-12 mb-6 mx-1">
+        <label for="blog-search" class="sr-only">Search posts</label>
+        <input
+          id="blog-search"
+          type="text"
+          autocomplete="off"
+          placeholder="search posts..."
+          class="absolute top-0 left-0 w-full h-full px-4 text-lg border-2 z-10 border-foreground bg-background handdrawn-2 text-foreground placeholder-foreground/60 focus:outline-none hover:translate-x-0.5 hover:translate-y-0.5 focus:translate-x-0.5 focus:translate-y-0.5 transition-all duration-300 ease-in-out"
+        />
+        <div
+          class="absolute top-0 left-0 w-full h-full border-2 bg-foreground border-foreground translate-x-1 translate-y-1 handdrawn-2"
+        >
+        </div>
+      </div>
+
       <section>
-        <div class="flex flex-col gap-4">
+        <div
+          id="blog-list"
+          class="grid lg:grid-cols-2 grid-cols-1 gap-x-5 gap-y-6"
+        >
           {
             posts.map(
-              (post: {
-                id: any;
-                data: {
-                  title: string;
-                  pubDate: Date;
-                  description: string;
-                  updatedDate?: Date;
-                };
-              }) => (
-                <div class="relative">
-                  <div
-                    class={`border-2 border-foreground w-full absolute top-0 bg-background z-10 hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out left-0 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
+              (
+                post: {
+                  id: any;
+                  data: {
+                    title: string;
+                    pubDate: Date;
+                    description: string;
+                    updatedDate?: Date;
+                  };
+                },
+                i: number
+              ) => (
+                <div
+                  class="blog-card relative"
+                  data-title={post.data.title.toLowerCase()}
+                  data-description={post.data.description.toLowerCase()}
+                >
+                  <a
+                    href={`/blog/${post.id}/`}
+                    class={`relative z-10 flex flex-col gap-2 p-4 h-full border-2 border-foreground bg-background hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out handdrawn-${styles[i].card}`}
                   >
-                    <a
-                      href={`/blog/${post.id}/`}
-                      class="flex flex-col lg:h-44 h-72 gap-2 p-4"
-                    >
-                      <div class="lg:text-2xl text-lg font-bold">
-                        {post.data.title}
-                      </div>
-                      <div class="flex-grow lg:text-lg ">
-                        {post.data.description}
-                      </div>
-                      <div class="flex flex-col w-full items-end lg:text-lg">
-                        <div class="font-bold">
-                          <FormattedDate date={post.data.pubDate} />
-                        </div>
-                        <div class="text-sm">
-                          last updated on:
-                          <FormattedDate date={post.data.updatedDate || post.data.pubDate} />
-                        </div>
-                      </div>
-                    </a>
-                  </div>
+                    <div class="lg:text-xl text-lg font-bold leading-tight">
+                      {post.data.title}
+                    </div>
+                    <div class="text-base flex-grow">
+                      {post.data.description}
+                    </div>
+                    <div class="flex justify-between items-end pt-1 text-sm gap-2">
+                      <span class="font-bold">
+                        <FormattedDate date={post.data.pubDate} />
+                      </span>
+                      <span class="opacity-70 text-xs lg:text-sm">
+                        updated{" "}
+                        <FormattedDate
+                          date={post.data.updatedDate || post.data.pubDate}
+                        />
+                      </span>
+                    </div>
+                  </a>
                   <div
-                    class={`border-2 border-foreground p-4 lg:h-44 h-72 bg-foreground translate-x-1 translate-y-2 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
+                    class={`absolute inset-0 border-2 border-foreground bg-foreground translate-x-1 translate-y-2 handdrawn-${styles[i].shadow}`}
                   />
                 </div>
               )
             )
           }
         </div>
+
+        <div
+          id="no-results"
+          class="hidden text-center text-lg lg:text-xl py-12 opacity-70"
+        >
+          no posts match your search :(
+        </div>
       </section>
     </main>
     <Footer />
+
+    <script>
+      const search = document.getElementById(
+        "blog-search"
+      ) as HTMLInputElement | null;
+      const cards = document.querySelectorAll<HTMLElement>(".blog-card");
+      const empty = document.getElementById("no-results");
+
+      const filter = () => {
+        if (!search) return;
+        const q = search.value.trim().toLowerCase();
+        let visible = 0;
+        cards.forEach((card) => {
+          const title = card.dataset.title || "";
+          const description = card.dataset.description || "";
+          const matches = !q || title.includes(q) || description.includes(q);
+          card.style.display = matches ? "" : "none";
+          if (matches) visible++;
+        });
+        if (empty) empty.classList.toggle("hidden", visible !== 0);
+      };
+
+      search?.addEventListener("input", filter);
+    </script>
   </body>
 </html>
