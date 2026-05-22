@@ -1,0 +1,248 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import FormattedDate from "../../components/FormattedDate.astro";
+import { type CollectionEntry, getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import "../../styles/global.css";
+
+const KHANA_TITLE = "Aditya Eats";
+const KHANA_DESCRIPTION =
+  "I eat a lot of food but I always forget where I had what. This is my attempt to document all the food I eat along with my recommendations. What is life if not a gluttonous one.";
+
+type KhanaPost = CollectionEntry<"khana">;
+
+const all = (await getCollection("khana")).sort(
+  (a: KhanaPost, b: KhanaPost) =>
+    b.data.dateOfVisit.valueOf() - a.data.dateOfVisit.valueOf()
+);
+
+const pinned = all.filter((p) => p.data.pinned);
+
+const pinnedStyles = pinned.map(() => ({
+  card: Math.floor(Math.random() * 5) + 1,
+  shadow: Math.floor(Math.random() * 5) + 1,
+}));
+const allStyles = all.map(() => ({
+  card: Math.floor(Math.random() * 5) + 1,
+  shadow: Math.floor(Math.random() * 5) + 1,
+}));
+
+const formatRating = (r: number) =>
+  Number.isInteger(r) ? r.toFixed(0) : r.toFixed(1);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={KHANA_TITLE} description={KHANA_DESCRIPTION} />
+  </head>
+
+  <body
+    class="bg-background text-foreground flex flex-col min-h-screen lg:w-[60%] p-4 lg:p-0 mx-auto font-handwriting"
+  >
+    <Header />
+    <main class="flex-grow">
+      <div class="text-3xl font-bold pt-4">{KHANA_TITLE}</div>
+      <div class="lg:text-xl text-lg p-4">{KHANA_DESCRIPTION}</div>
+
+      {
+        pinned.length > 0 && (
+          <section class="mb-8">
+            <div class="flex items-baseline gap-3 mb-4 px-1">
+              <h2 class="text-2xl font-bold">pinned places</h2>
+              <span class="text-sm opacity-70">
+                the ones worth remembering
+              </span>
+            </div>
+            <div class="grid lg:grid-cols-2 grid-cols-1 gap-x-5 gap-y-6">
+              {pinned.map((post, i) => (
+                <div class="khana-card relative">
+                  <a
+                    href={`/khana/${post.id}/`}
+                    class={`relative z-10 flex flex-col h-full overflow-hidden border-2 border-foreground bg-background hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out handdrawn-${pinnedStyles[i].card}`}
+                  >
+                    {post.data.heroImage && (
+                      <div class="relative w-full aspect-[16/10] overflow-hidden border-b-2 border-foreground bg-foreground/5">
+                        <Image
+                          src={post.data.heroImage}
+                          alt={post.data.imgDesc || post.data.title}
+                          width={800}
+                          loading="lazy"
+                          decoding="async"
+                          format="webp"
+                          class="w-full h-full object-cover"
+                        />
+                        <span class="absolute bottom-2 left-2 text-xs font-bold bg-background border-2 border-foreground px-2 py-0.5 handdrawn-2">
+                          {"★".repeat(Math.round(post.data.rating))}
+                          {"☆".repeat(5 - Math.round(post.data.rating))}
+                        </span>
+                      </div>
+                    )}
+                    <div class="flex flex-col gap-2 p-4 flex-grow">
+                      <div class="lg:text-xl text-lg font-bold leading-tight">
+                        {post.data.title}
+                      </div>
+                      <div class="text-base flex-grow">
+                        {post.data.description}
+                      </div>
+                      <div class="flex flex-wrap gap-x-3 gap-y-1 text-sm opacity-80">
+                        <span>📍 {post.data.location}</span>
+                        <span>🍽 {post.data.cuisine}</span>
+                        <span>★ {formatRating(post.data.rating)}/5</span>
+                      </div>
+                      <div class="flex justify-between items-end pt-1 text-sm gap-2">
+                        <span class="font-bold">
+                          visited <FormattedDate date={post.data.dateOfVisit} />
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                  <div
+                    class={`absolute inset-0 border-2 border-foreground bg-foreground translate-x-1 translate-y-2 handdrawn-${pinnedStyles[i].shadow}`}
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <div class="flex items-baseline gap-3 mb-4 px-1">
+        <h2 class="text-2xl font-bold">all places</h2>
+        <span class="text-sm opacity-70">
+          {all.length} {all.length === 1 ? "spot" : "spots"} on the list
+        </span>
+      </div>
+
+      <!-- search -->
+      <div class="relative h-12 mb-6 mx-1">
+        <label for="khana-search" class="sr-only">Search places</label>
+        <input
+          id="khana-search"
+          type="text"
+          autocomplete="off"
+          placeholder="search places, cuisines, cities..."
+          class="absolute top-0 left-0 w-full h-full px-4 text-lg border-2 z-10 border-foreground bg-background handdrawn-2 text-foreground placeholder-foreground/60 focus:outline-none hover:translate-x-0.5 hover:translate-y-0.5 focus:translate-x-0.5 focus:translate-y-0.5 transition-all duration-300 ease-in-out"
+        />
+        <div
+          class="absolute top-0 left-0 w-full h-full border-2 bg-foreground border-foreground translate-x-1 translate-y-1 handdrawn-2"
+        >
+        </div>
+      </div>
+
+      <section>
+        <div
+          id="khana-list"
+          class="grid lg:grid-cols-2 grid-cols-1 gap-x-5 gap-y-6"
+        >
+          {
+            all.map((post, i) => (
+              <div
+                class="khana-card relative"
+                data-title={post.data.title.toLowerCase()}
+                data-description={post.data.description.toLowerCase()}
+                data-location={post.data.location.toLowerCase()}
+                data-cuisine={post.data.cuisine.toLowerCase()}
+              >
+                <a
+                  href={`/khana/${post.id}/`}
+                  class={`relative z-10 flex flex-col h-full overflow-hidden border-2 border-foreground bg-background hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out handdrawn-${allStyles[i].card}`}
+                >
+                  {post.data.pinned && (
+                    <span class="absolute top-2 right-2 z-20 text-xs font-bold bg-yellow border-2 border-foreground px-2 py-0.5 handdrawn-2">
+                      📌 pinned
+                    </span>
+                  )}
+                  {post.data.heroImage && (
+                    <div class="relative w-full aspect-[16/10] overflow-hidden border-b-2 border-foreground bg-foreground/5">
+                      <Image
+                        src={post.data.heroImage}
+                        alt={post.data.imgDesc || post.data.title}
+                        width={800}
+                        loading="lazy"
+                        decoding="async"
+                        format="webp"
+                        class="w-full h-full object-cover"
+                      />
+                      <span class="absolute bottom-2 left-2 text-xs font-bold bg-background border-2 border-foreground px-2 py-0.5 handdrawn-2">
+                        {"★".repeat(Math.round(post.data.rating))}
+                        {"☆".repeat(5 - Math.round(post.data.rating))}
+                      </span>
+                    </div>
+                  )}
+                  <div class="flex flex-col gap-2 p-4 flex-grow">
+                    <div class="lg:text-xl text-lg font-bold leading-tight">
+                      {post.data.title}
+                    </div>
+                    <div class="text-base flex-grow">
+                      {post.data.description}
+                    </div>
+                    <div class="flex flex-wrap gap-x-3 gap-y-1 text-sm opacity-80">
+                      <span>📍 {post.data.location}</span>
+                      <span>🍽 {post.data.cuisine}</span>
+                      <span>★ {formatRating(post.data.rating)}/5</span>
+                    </div>
+                    <div class="flex justify-between items-end pt-1 text-sm gap-2">
+                      <span class="font-bold">
+                        visited <FormattedDate date={post.data.dateOfVisit} />
+                      </span>
+                    </div>
+                  </div>
+                </a>
+                <div
+                  class={`absolute inset-0 border-2 border-foreground bg-foreground translate-x-1 translate-y-2 handdrawn-${allStyles[i].shadow}`}
+                />
+              </div>
+            ))
+          }
+        </div>
+
+        {
+          all.length === 0 && (
+            <div class="text-center text-lg lg:text-xl py-12 opacity-70">
+              no places logged yet — stay hungry :)
+            </div>
+          )
+        }
+
+        <div
+          id="no-results"
+          class="hidden text-center text-lg lg:text-xl py-12 opacity-70"
+        >
+          no places match your search :(
+        </div>
+      </section>
+    </main>
+    <Footer />
+
+    <script>
+      const search = document.getElementById(
+        "khana-search"
+      ) as HTMLInputElement | null;
+      const cards = document.querySelectorAll<HTMLElement>("#khana-list .khana-card");
+      const empty = document.getElementById("no-results");
+
+      const filter = () => {
+        if (!search) return;
+        const q = search.value.trim().toLowerCase();
+        let visible = 0;
+        cards.forEach((card) => {
+          const fields = [
+            card.dataset.title || "",
+            card.dataset.description || "",
+            card.dataset.location || "",
+            card.dataset.cuisine || "",
+          ];
+          const matches = !q || fields.some((f) => f.includes(q));
+          card.style.display = matches ? "" : "none";
+          if (matches) visible++;
+        });
+        if (empty) empty.classList.toggle("hidden", visible !== 0);
+      };
+
+      search?.addEventListener("input", filter);
+    </script>
+  </body>
+</html>

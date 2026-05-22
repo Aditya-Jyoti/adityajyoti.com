@@ -1,0 +1,372 @@
+---
+import type { CollectionEntry } from "astro:content";
+import type { MarkdownHeading } from "astro";
+import { Image, getImage } from "astro:assets";
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import FormattedDate from "../components/FormattedDate.astro";
+
+import "../styles/global.css";
+import "../styles/post.css";
+
+type Props = CollectionEntry<"khana">["data"] & {
+  headings?: MarkdownHeading[];
+};
+
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  heroImage,
+  imgDesc,
+  location,
+  cuisine,
+  dateOfVisit,
+  billAmount,
+  peopleCount,
+  rating,
+  gallery = [],
+  headings = [],
+} = Astro.props;
+
+const heroProcessed = heroImage
+  ? await getImage({ src: heroImage, format: "webp", width: 1200 })
+  : undefined;
+
+const tocItems = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
+
+const formatRating = (r: number) =>
+  Number.isInteger(r) ? r.toFixed(0) : r.toFixed(1);
+
+const formatBill = (n: number) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(n);
+
+---
+
+<html lang="en">
+  <head>
+    <BaseHead
+      title={title}
+      description={description}
+      image={heroProcessed?.src}
+      type="article"
+      pubDate={pubDate}
+      updatedDate={updatedDate}
+      preloadImageWebp={heroProcessed?.src}
+    />
+    <script is:inline>
+      try {
+        if (localStorage.getItem("blog-font") === "sketch") {
+          document.documentElement.classList.add("font-sketch");
+        }
+      } catch (e) {}
+    </script>
+  </head>
+
+  <body
+    class="bg-background text-foreground flex flex-col min-h-screen max-w-6xl w-full px-4 lg:px-6 lg:py-4 mx-auto font-blog"
+  >
+    <Header />
+    <main class="flex-1 w-full">
+      <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_240px] lg:gap-10">
+        <article class="min-w-0">
+          <header class="mt-6 mb-6">
+            <h1
+              class="font-bold leading-tight tracking-tight text-3xl lg:text-4xl"
+            >
+              {title}
+            </h1>
+            <div class="w-24 h-1 bg-foreground rounded-full mt-3"></div>
+
+            <div
+              class="mt-3 flex items-center justify-between gap-3 flex-wrap"
+            >
+              <div
+                class="text-xs lg:text-sm opacity-70 flex flex-wrap gap-x-3 gap-y-1"
+              >
+                <span>
+                  Published <FormattedDate date={pubDate} />
+                </span>
+                {
+                  updatedDate &&
+                    updatedDate.valueOf() !== pubDate.valueOf() && (
+                      <span>
+                        · Updated <FormattedDate date={updatedDate} />
+                      </span>
+                    )
+                }
+              </div>
+
+              <button
+                type="button"
+                aria-label="Toggle blog font"
+                title="Toggle font"
+                class="font-toggle-btn font-handwriting lg:hidden flex items-center justify-center gap-1.5 text-xs border-2 border-foreground bg-background px-2.5 py-1 handdrawn-2 hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out"
+              >
+                <span>Aa</span>
+                <span class="font-toggle-label font-bold">readable</span>
+              </button>
+            </div>
+          </header>
+
+          {
+            heroImage && (
+              <figure class="my-6">
+                <Image
+                  src={heroImage}
+                  alt={imgDesc || title}
+                  width={1200}
+                  loading="eager"
+                  decoding="async"
+                  fetchpriority="high"
+                  format="webp"
+                  class="w-full h-auto rounded-xl border border-foreground/15"
+                />
+                {imgDesc && (
+                  <figcaption class="text-center text-sm lg:text-base mt-2 italic opacity-70">
+                    {imgDesc}
+                  </figcaption>
+                )}
+              </figure>
+            )
+          }
+
+          <section
+            class="khana-meta my-6 grid grid-cols-2 md:grid-cols-3 gap-3 border-2 border-foreground bg-background/70 p-4 handdrawn-3"
+            aria-label="Visit details"
+          >
+            <div>
+              <div class="meta-label">location</div>
+              <div class="meta-value">{location}</div>
+            </div>
+            <div>
+              <div class="meta-label">cuisine</div>
+              <div class="meta-value">{cuisine}</div>
+            </div>
+            <div>
+              <div class="meta-label">date of visit</div>
+              <div class="meta-value">
+                <FormattedDate date={dateOfVisit} />
+              </div>
+            </div>
+            <div>
+              <div class="meta-label">bill</div>
+              <div class="meta-value">{formatBill(billAmount)}</div>
+            </div>
+            <div>
+              <div class="meta-label">people</div>
+              <div class="meta-value">{peopleCount}</div>
+            </div>
+            <div>
+              <div class="meta-label">rating</div>
+              <div class="meta-value">{formatRating(rating)}/5</div>
+            </div>
+          </section>
+
+          <div class="prose">
+            <slot />
+          </div>
+
+          {
+            gallery.length > 0 && (
+              <section class="mt-10">
+                <h2 class="text-2xl font-bold border-b-2 border-foreground pb-2 mb-4">
+                  the spread
+                </h2>
+                <div class="gallery-grid">
+                  {gallery.map((img, i) => (
+                    <figure class="gallery-item">
+                      <a
+                        href={img.src.src}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={img.alt || `Photo ${i + 1}`}
+                      >
+                        <Image
+                          src={img.src}
+                          alt={img.alt || `Photo ${i + 1}`}
+                          loading="lazy"
+                          decoding="async"
+                          format="webp"
+                          class="gallery-img"
+                        />
+                      </a>
+                      {img.caption && (
+                        <figcaption>{img.caption}</figcaption>
+                      )}
+                    </figure>
+                  ))}
+                </div>
+              </section>
+            )
+          }
+        </article>
+
+        <aside class="hidden lg:block">
+          <div class="toc-sticky sticky top-4 mt-6 flex flex-col gap-4">
+            <div class="relative shrink-0">
+              <button
+                type="button"
+                aria-label="Toggle blog font"
+                class="font-toggle-btn font-handwriting relative z-10 flex items-center justify-center gap-2 w-full text-sm border-2 border-foreground bg-background hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out px-3 py-2 handdrawn-2"
+              >
+                <span>font:</span>
+                <span class="font-toggle-label font-bold">readable</span>
+              </button>
+              <div
+                class="absolute inset-0 border-2 border-foreground bg-foreground translate-x-1 translate-y-1 handdrawn-2"
+              >
+              </div>
+            </div>
+
+            <div
+              class="font-handwriting shrink-0 border-2 border-foreground bg-background p-4 handdrawn-2"
+              aria-label="At a glance"
+            >
+              <div class="font-bold text-lg mb-2">at a glance</div>
+              <ul class="text-sm space-y-1">
+                <li>
+                  <span class="opacity-70">rating:</span>{" "}
+                  <strong>{formatRating(rating)}/5</strong>
+                </li>
+                <li>
+                  <span class="opacity-70">where:</span> {location}
+                </li>
+                <li>
+                  <span class="opacity-70">cuisine:</span> {cuisine}
+                </li>
+                <li>
+                  <span class="opacity-70">visited:</span>{" "}
+                  <FormattedDate date={dateOfVisit} />
+                </li>
+                <li>
+                  <span class="opacity-70">bill:</span> {formatBill(billAmount)}
+                  {" "}
+                  <span class="opacity-70">
+                    ({peopleCount} {peopleCount === 1 ? "person" : "people"})
+                  </span>
+                </li>
+              </ul>
+            </div>
+
+            {
+              tocItems.length > 0 && (
+                <nav
+                  class="toc font-handwriting flex-1 min-h-0 border-2 border-foreground bg-background p-4 handdrawn-3 overflow-y-auto"
+                  aria-label="Table of contents"
+                >
+                  <div class="font-bold text-lg mb-2">contents</div>
+                  <ul class="toc-list">
+                    {tocItems.map((h) => (
+                      <li class={`toc-item toc-depth-${h.depth}`}>
+                        <a href={`#${h.slug}`} class="toc-link">
+                          {h.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              )
+            }
+          </div>
+        </aside>
+      </div>
+    </main>
+    <Footer />
+
+    <script>
+      const html = document.documentElement;
+      const btns = document.querySelectorAll<HTMLButtonElement>(
+        ".font-toggle-btn"
+      );
+      const labels = document.querySelectorAll<HTMLElement>(
+        ".font-toggle-label"
+      );
+
+      const apply = (mode: "readable" | "sketch") => {
+        html.classList.toggle("font-sketch", mode === "sketch");
+        labels.forEach((l) => (l.textContent = mode));
+      };
+
+      try {
+        apply(
+          localStorage.getItem("blog-font") === "sketch" ? "sketch" : "readable"
+        );
+      } catch {}
+
+      btns.forEach((btn) =>
+        btn.addEventListener("click", () => {
+          const next = html.classList.contains("font-sketch")
+            ? "readable"
+            : "sketch";
+          try {
+            localStorage.setItem("blog-font", next);
+          } catch {}
+          apply(next);
+        })
+      );
+
+      const stickyEls =
+        document.querySelectorAll<HTMLElement>(".toc-sticky");
+      const STICKY_TOP = 16;
+      const BOTTOM_GAP = 16;
+      const updateStickyHeight = () => {
+        stickyEls.forEach((el) => {
+          const top = el.getBoundingClientRect().top;
+          const pinnedMax = window.innerHeight - STICKY_TOP - BOTTOM_GAP;
+          const available =
+            top >= STICKY_TOP
+              ? window.innerHeight - top - BOTTOM_GAP
+              : pinnedMax;
+          el.style.height = available > 200 ? `${available}px` : "";
+        });
+      };
+      if (stickyEls.length > 0) {
+        updateStickyHeight();
+        window.addEventListener("scroll", updateStickyHeight, {
+          passive: true,
+        });
+        window.addEventListener("resize", updateStickyHeight);
+      }
+
+      const links =
+        document.querySelectorAll<HTMLAnchorElement>(".toc-link");
+      const idToLink = new Map<string, HTMLAnchorElement>();
+      links.forEach((a) => {
+        const id = a.getAttribute("href")?.slice(1);
+        if (id) idToLink.set(id, a);
+      });
+      const targets = Array.from(idToLink.keys())
+        .map((id) => document.getElementById(id))
+        .filter((el): el is HTMLElement => el !== null);
+
+      const setActive = (id: string | null) => {
+        idToLink.forEach((a) => a.classList.remove("is-active"));
+        if (id && idToLink.has(id))
+          idToLink.get(id)!.classList.add("is-active");
+      };
+
+      if (targets.length > 0 && "IntersectionObserver" in window) {
+        const visible = new Set<string>();
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) visible.add(e.target.id);
+              else visible.delete(e.target.id);
+            });
+            const firstVisible = targets.find((t) => visible.has(t.id));
+            if (firstVisible) setActive(firstVisible.id);
+          },
+          { rootMargin: "0px 0px -70% 0px", threshold: 0 }
+        );
+        targets.forEach((t) => observer.observe(t));
+      }
+    </script>
+  </body>
+</html>
