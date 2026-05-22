@@ -1,6 +1,6 @@
 ---
 title: "Ghoomar - Traditional Thali Restaurant"
-description: "A starter entry showing what a khana post looks like. Replace this with your first real food write-up."
+description: "Classic rajasthani spread at Ghoomar. A visit down memory lane"
 pubDate: "2026-05-22"
 location: "K-43, 1st floor, Connaught Place, New Delhi"
 cuisine: "Rajasthani Thali"
@@ -10,7 +10,7 @@ peopleCount: 1
 rating: 3.5
 pinned: false
 imgDesc: "Standard Rajasthani Thali served at Ghoomar - Traditional Thali Restaurant"
-heroImage: "./hero.png"
+heroImage: "./post1-hero.png"
 # gallery:
 #   - src: "./menu.png"
 #     alt: "first dish"
