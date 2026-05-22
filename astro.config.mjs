@@ -15,6 +15,6 @@ export default defineConfig({
       theme: Gruvbox,
     },
   },
-  site: "https://adityajyoti.com",
+  site: "https://adityajyoti.in",
   integrations: [mdx(), sitemap(), tailwind()],
 });

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://adityajyoti.com/sitemap-index.xml
+Sitemap: https://adityajyoti.in/sitemap-index.xml
