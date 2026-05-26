@@ -4,6 +4,9 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import FormattedDate from "../components/FormattedDate.astro";
+import BackgroundDoodles from "../components/BackgroundDoodles.astro";
+import Squiggle from "../components/Squiggle.astro";
+import StickyCard from "../components/StickyCard.astro";
 
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import "../styles/global.css";
@@ -29,8 +32,7 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
     <BaseHead
       title={SITE_TITLE}
       description={SITE_DESCRIPTION}
-      preloadImage="/me-sketch.png"
-      preloadImageWebp="/me-sketch.webp"
+      preloadImage="/Person.svg"
     />
     <script
       type="application/ld+json"
@@ -65,8 +67,9 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
     />
   </head>
   <body
-    class="bg-background text-foreground flex flex-col min-h-screen lg:w-[60%] p-4 lg:p-0 mx-auto font-handwriting"
+    class="bg-background text-foreground flex flex-col min-h-screen lg:w-[60%] p-4 lg:p-0 mx-auto font-handwriting relative overflow-x-clip"
   >
+    <BackgroundDoodles />
     <Header />
 
     <section class="flex-grow flex flex-col gap-4">
@@ -76,18 +79,15 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
         class="flex lg:flex-row flex-col justify-between items-center lg:w-[90%] mx-auto lg:py-12"
       >
         <div class="w-full lg:hidden justify-center flex">
-          <picture>
-            <source srcset="/me-sketch.webp" type="image/webp" />
-            <img
-              src="/me-sketch.png"
-              alt="Sketch of Aditya Jyoti"
-              width="256"
-              height="321"
-              fetchpriority="high"
-              decoding="async"
-              class="h-64 w-auto p-2"
-            />
-          </picture>
+          <img
+            src="/Person.svg"
+            alt="Sketch of Aditya Jyoti"
+            width="256"
+            height="321"
+            fetchpriority="high"
+            decoding="async"
+            class="h-64 w-auto p-2"
+          />
         </div>
         <div
           class="flex flex-col lg:text-xl text-lg lg:w-fit w-full lg:text-left text-center"
@@ -146,19 +146,16 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
             </div>
           </div>
         </div>
-        <div class="w-full scale-125 lg:flex justify-center hidden">
-          <picture>
-            <source srcset="/me-sketch.webp" type="image/webp" />
-            <img
-              src="/me-sketch.png"
-              alt="Sketch of Aditya Jyoti"
-              width="256"
-              height="321"
-              fetchpriority="high"
-              decoding="async"
-              class="h-64 w-auto p-2"
-            />
-          </picture>
+        <div class="w-full lg:flex justify-center hidden pl-16">
+          <img
+            src="/Person.svg"
+            alt="Sketch of Aditya Jyoti"
+            width="256"
+            height="321"
+            fetchpriority="high"
+            decoding="async"
+            class="h-96 w-auto p-2"
+          />
         </div>
       </section>
 
@@ -166,7 +163,7 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
       <section id="projects" class="flex flex-col gap-4">
         <div class="flex flex-col w-full items-end">
           <h2 class="lg:text-4xl text-2xl font-bold">Projects</h2>
-          <div class="lg:w-24 w-12 h-1 rounded-full bg-foreground"></div>
+          <Squiggle class="lg:w-24 w-12" />
         </div>
 
         <div class="lg:text-xl text-right">
@@ -177,7 +174,7 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
         </div>
 
         <!-- project card -->
-        <div class="flex lg:flex-row flex-col gap-4 justify-around w-full">
+        <div class="flex lg:flex-row flex-col gap-6 lg:gap-8 w-full lg:my-8">
           <ProjectCard
             handdrawn_style="handdrawn-1"
             title="Recruitment Site"
@@ -211,34 +208,43 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
       <section id="whatido">
         <div class="flex flex-col w-full">
           <h2 class="lg:text-4xl text-2xl font-bold">What I Do</h2>
-          <div class="lg:w-24 w-12 h-1 rounded-full bg-foreground"></div>
+          <Squiggle class="lg:w-24 w-12" />
         </div>
 
-        <section class="py-4 lg:text-xl flex flex-col gap-4">
-          <div class="flex flex-col">
-            <span class="font-bold lg:text-2xl text-lg">. Robotics -</span>
-            <span
-              >I love building things from scratch. Imagine a world where all
-              the hardware that you use was sourced and built by yourself.
-              That's the world I want to live in.
-            </span>
+        <section class="py-4 lg:text-xl flex flex-col gap-6">
+          <div class="flex gap-4 items-stretch">
+            <Squiggle orientation="vertical" height={4} class="self-stretch shrink-0 h-auto w-2" />
+            <div class="flex flex-col flex-1 min-w-0">
+              <span class="font-bold lg:text-2xl text-lg">Robotics</span>
+              <span
+                >I love building things from scratch. Imagine a world where all
+                the hardware that you use was sourced and built by yourself.
+                That's the world I want to live in.
+              </span>
+            </div>
           </div>
-          <div class="flex flex-col w-full items-end text-right">
-            <span class="font-bold lg:text-2xl text-lg">- Programming .</span>
-            <span
-              >Programming feels like magic to me. It gives me the freedom to
-              explore and build my own world with only my imagination as a
-              limit.
-            </span>
+
+          <div class="flex gap-4 items-stretch text-right">
+            <div class="flex flex-col flex-1 min-w-0 items-end">
+              <span class="font-bold lg:text-2xl text-lg">Programming</span>
+              <span
+                >Programming feels like magic to me. It gives me the freedom to
+                explore and build my own world with only my imagination as a
+                limit.
+              </span>
+            </div>
+            <Squiggle orientation="vertical" height={4} class="self-stretch shrink-0 h-auto w-2" />
           </div>
-          <div class="flex flex-col">
-            <span class="font-bold lg:text-2xl text-lg"
-              >. Public Speaking -</span
-            >
-            <span
-              >Seeing everyone's eyes on me, listening to my every word and so
-              much more gives me more adrenaline than any thing in the world.
-            </span>
+
+          <div class="flex gap-4 items-stretch">
+            <Squiggle orientation="vertical" height={4} class="self-stretch shrink-0 h-auto w-2" />
+            <div class="flex flex-col flex-1 min-w-0">
+              <span class="font-bold lg:text-2xl text-lg">Public Speaking</span>
+              <span
+                >Seeing everyone's eyes on me, listening to my every word and so
+                much more gives me more adrenaline than any thing in the world.
+              </span>
+            </div>
           </div>
         </section>
       </section>
@@ -247,7 +253,7 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
       <section id="blog" class="flex flex-col gap-4 -mt-4">
         <div class="flex flex-col w-full items-end">
           <h2 class="lg:text-4xl text-2xl font-bold">I Also Write</h2>
-          <div class="w-32 h-1 rounded-full bg-foreground"></div>
+          <Squiggle class="w-32" />
         </div>
         <!-- content -->
         <section class="flex flex-col gap-4">
@@ -259,11 +265,13 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
                   data: { title: unknown; description: unknown; pubDate: Date };
                   id: any;
                 }) => (
-                  <div class="relative">
-                    <a
-                      href={`/blog/${post.id}`}
-                      class={`flex flex-col gap-4 w-full hover:translate-x-0.5 hover:translate-y-0.5 transition-all ease-in-out duration-300 border-2 border-foreground bg-background p-4 lg:h-48 h-[14.5rem] absolute z-10 text-foreground hover:text-foreground handdrawn-${Math.floor(Math.random() * 5) + 1}`}
-                    >
+                  <StickyCard
+                    href={`/blog/${post.id}`}
+                    seed={String(post.id)}
+                    handdrawn={`handdrawn-${(String(post.id).length % 5) + 1}`}
+                    faceClass="lg:h-48 h-[14.5rem]"
+                  >
+                    <div class="flex flex-col gap-4 w-full h-full">
                       <span class="lg:text-2xl text-lg font-bold">
                         {post.data.title}
                       </span>
@@ -273,11 +281,8 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
                       <div class="w-full flex lg:text-xl text-lg justify-between">
                         <FormattedDate date={post.data.pubDate} />
                       </div>
-                    </a>
-                    <div
-                      class={`flex flex-col gap-4 w-full border-2 bg-foreground border-foreground p-4 lg:h-48 h-[14.5rem] translate-x-1 translate-y-1 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
-                    />
-                  </div>
+                    </div>
+                  </StickyCard>
                 )
               )
           }
@@ -299,7 +304,7 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
           <section id="eats" class="flex flex-col gap-4">
             <div class="flex flex-col w-full">
               <h2 class="lg:text-4xl text-2xl font-bold">I Also Eat</h2>
-              <div class="w-28 h-1 rounded-full bg-foreground" />
+              <Squiggle class="w-28" />
             </div>
 
             <section class="flex flex-col gap-4">
@@ -315,11 +320,13 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
                     rating: number;
                   };
                 }) => (
-                  <div class="relative">
-                    <a
-                      href={`/khana/${post.id}`}
-                      class={`flex flex-col gap-3 w-full hover:translate-x-0.5 hover:translate-y-0.5 transition-all ease-in-out duration-300 border-2 border-foreground bg-background p-4 lg:h-52 h-[16rem] absolute z-10 text-foreground hover:text-foreground handdrawn-${Math.floor(Math.random() * 5) + 1}`}
-                    >
+                  <StickyCard
+                    href={`/khana/${post.id}`}
+                    seed={String(post.id)}
+                    handdrawn={`handdrawn-${(String(post.id).length % 5) + 1}`}
+                    faceClass="lg:h-52 h-[16rem]"
+                  >
+                    <div class="flex flex-col gap-3 w-full h-full">
                       <div class="flex justify-between items-start gap-2">
                         <span class="lg:text-2xl text-lg font-bold leading-tight">
                           {post.data.title}
@@ -338,11 +345,8 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
                       <div class="w-full flex lg:text-xl text-lg justify-between">
                         <FormattedDate date={post.data.dateOfVisit} />
                       </div>
-                    </a>
-                    <div
-                      class={`flex flex-col gap-4 w-full border-2 bg-foreground border-foreground p-4 lg:h-52 h-[16rem] translate-x-1 translate-y-1 handdrawn-${Math.floor(Math.random() * 5) + 1}`}
-                    />
-                  </div>
+                    </div>
+                  </StickyCard>
                 )
               )}
             </section>
@@ -368,7 +372,7 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
       <section id="contact" class="flex flex-col gap-4">
         <div class="flex flex-col w-full items-end">
           <h2 class="lg:text-4xl text-2xl font-bold">Talk To Me (please)</h2>
-          <div class="lg:w-44 w-24 h-1 rounded-full bg-foreground"></div>
+          <Squiggle class="lg:w-44 w-24" />
         </div>
 
         <div class="lg:text-xl text-lg">

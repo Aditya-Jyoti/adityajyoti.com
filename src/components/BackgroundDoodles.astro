@@ -1,0 +1,181 @@
+---
+// Scatters the SVGs in /public/bg-elements/ as background decoration.
+//
+// Design notes:
+// - Seeded RNG for stable layout across renders
+// - Single rejection-sampling pass: each doodle is placed at a fully random
+//   (x, y) with random size/rotation/opacity. No fixed columns or bands, so
+//   the layout doesn't read as a grid as the user scrolls.
+// - Minimum-gap constraint keeps doodles from overlapping
+// - Same SVG must sit far apart from another instance of itself
+// - A portrait zone (top-right) is excluded so nothing sits behind the self
+//   sketch in the root section
+
+type Doodle = {
+  src: string;
+  xVw: number;
+  yPx: number;
+  width: number;
+  rotate: number;
+  opacity: number;
+  hideMobile: boolean;
+};
+
+function mulberry32(seed: number) {
+  return function () {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = seed;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const rand = mulberry32(11);
+const svgs = Array.from({ length: 10 }, (_, i) => `/bg-elements/bg${i + 1}.svg`);
+
+// Generate positions up to this height; shorter pages clip via the
+// container's height:100% + overflow-hidden.
+const PAGE_HEIGHT_PX = 7000;
+
+// Tight exclusion zone around the Aditya sketch on desktop — just the body
+// silhouette itself. Doodles are allowed all around it.
+const portraitZone = { xMin: 56, xMax: 72, yMin: 30, yMax: 440 };
+
+const VW_TO_PX = 10; // 1 vw% ≈ 10px for distance comparisons
+
+function inPortraitZone(x: number, y: number, halfW: number) {
+  return (
+    x + halfW > portraitZone.xMin &&
+    x - halfW < portraitZone.xMax &&
+    y < portraitZone.yMax
+  );
+}
+
+const placed: Doodle[] = [];
+
+// One unified placement attempt with a random position, size, opacity, and
+// rotation. The caller controls whether it's allowed near the page edges,
+// whether it can sit in the center column, and how transparent it can get.
+function attempt(opts: {
+  centerWeighted: boolean; // true = bias toward center, faint
+  faint?: boolean;
+  mobile?: boolean;
+}): Doodle | null {
+  for (let i = 0; i < 50; i++) {
+    const srcIdx = Math.floor(rand() * svgs.length);
+    const src = svgs[srcIdx];
+
+    // Primary doodles live on the sides only — the center column belongs
+    // to the faint (centerWeighted) layer so text stays readable.
+    let x: number;
+    if (opts.centerWeighted) {
+      x = 22 + rand() * 56; // 22% - 78%
+    } else {
+      // Two side bands: left 1%-28%, right 72%-99%
+      x = rand() < 0.5 ? 1 + rand() * 27 : 72 + rand() * 27;
+    }
+    const y = rand() * PAGE_HEIGHT_PX;
+    const width = 55 + rand() * 145; // 55 - 200 px
+    if (inPortraitZone(x, y, width / 20)) continue;
+
+    // Opacity scales with horizontal distance from viewport center so any
+    // doodle that lands near the text column is automatically faint, no
+    // matter which placement pass produced it.
+    // distance from center, 0 (center) -> 1 (edge)
+    const edgeness = Math.min(1, Math.abs(x - 50) / 50);
+    // smooth ramp: faint near center, fuller at the edges
+    const maxOp = 0.06 + edgeness * edgeness * 0.22; // 0.06 .. 0.28
+    const minOp = 0.03 + edgeness * edgeness * 0.1; // 0.03 .. 0.13
+    const opacity = opts.faint
+      ? Math.min(0.07, minOp + rand() * 0.03)
+      : minOp + rand() * (maxOp - minOp);
+
+    const candidate: Doodle = {
+      src,
+      xVw: x,
+      yPx: y,
+      width,
+      rotate: (rand() - 0.5) * 60,
+      opacity,
+      hideMobile: opts.mobile ?? false,
+    };
+
+    // Minimum gap scales with the larger of the two doodles. Faint doodles
+    // can sit closer to non-faint ones (they barely register visually).
+    let ok = true;
+    for (const p of placed) {
+      const dx = (candidate.xVw - p.xVw) * VW_TO_PX;
+      const dy = candidate.yPx - p.yPx;
+      const euclid = Math.sqrt(dx * dx + dy * dy);
+      const bothFaint = opts.faint && p.opacity < 0.14;
+      const minGap = Math.max(candidate.width, p.width) * (bothFaint ? 0.55 : 0.75) + 18;
+      if (euclid < minGap) {
+        ok = false;
+        break;
+      }
+      if (p.src === candidate.src && euclid < 320) {
+        ok = false;
+        break;
+      }
+    }
+    if (ok) return candidate;
+  }
+  return null;
+}
+
+// Foreground-ish (regular opacity) doodles spread freely. About 60% of
+// them are flagged hideMobile so the layout doesn't feel crowded on small
+// screens (where the body fills the viewport and every doodle overlaps
+// content).
+const PRIMARY_COUNT = 160;
+for (let i = 0; i < PRIMARY_COUNT; i++) {
+  const d = attempt({ centerWeighted: false, mobile: i % 5 !== 0 && i % 7 !== 0 });
+  if (d) placed.push(d);
+}
+
+// Faint center-leaning doodles that fill the middle space without competing
+// with the text. Hidden on mobile so reading isn't disrupted on small screens.
+const CENTER_COUNT = 110;
+for (let i = 0; i < CENTER_COUNT; i++) {
+  const d = attempt({ centerWeighted: true, faint: true, mobile: true });
+  if (d) placed.push(d);
+}
+---
+
+<div
+  class="bg-doodles pointer-events-none absolute -z-10 overflow-hidden select-none"
+  aria-hidden="true"
+>
+  {
+    placed.map((d) => (
+      <img
+        src={d.src}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        class:list={["bg-doodle absolute", d.hideMobile && "hidden md:block"]}
+        style={`left:${d.xVw}vw;top:${d.yPx}px;width:${d.width}px;transform:translate(-50%,-50%) rotate(${d.rotate}deg);opacity:${d.opacity};`}
+      />
+    ))
+  }
+</div>
+
+<style>
+  .bg-doodles {
+    width: 100vw;
+    height: 100%;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .bg-doodle {
+    max-width: 16vw;
+  }
+  @media (max-width: 768px) {
+    .bg-doodle {
+      max-width: 32vw;
+    }
+  }
+</style>

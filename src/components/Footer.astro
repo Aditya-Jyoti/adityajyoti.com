@@ -3,3 +3,35 @@
   made with blood, sweat and tears by <br />
   <strong> <a href="https://adityajyoti.in" class="text-foreground">Aditya Jyoti</a></strong>
 </footer>
+
+<!--
+  Shared SVG filter used by card components to give their borders and edges a
+  hand-drawn, slightly jagged feel. feTurbulence creates organic noise, and
+  feDisplacementMap perturbs the pixels along that noise. Kept here so it loads
+  exactly once per page.
+-->
+<svg
+  width="0"
+  height="0"
+  style="position:absolute;width:0;height:0;overflow:hidden"
+  aria-hidden="true"
+>
+  <defs>
+    <filter id="card-wobble" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.025"
+        numOctaves="2"
+        seed="4"
+        result="noise"
+      ></feTurbulence>
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="noise"
+        scale="2.6"
+        xChannelSelector="R"
+        yChannelSelector="G"
+      ></feDisplacementMap>
+    </filter>
+  </defs>
+</svg>

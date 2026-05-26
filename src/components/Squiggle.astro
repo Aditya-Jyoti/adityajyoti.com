@@ -1,0 +1,77 @@
+---
+// Hand-drawn-feeling horizontal line. Used in place of straight <div> bars
+// under section headings and as the header divider.
+//
+// Props:
+//   width:  CSS class for width (e.g. "w-24" or "w-full") — the SVG fills it
+//   height: pixel height of the line bounding box; default 6
+//   strokeWidth: stroke width in px; default 2
+//   class:  extra classes to merge
+
+type Props = {
+  width?: string;
+  height?: number;
+  strokeWidth?: number;
+  orientation?: "horizontal" | "vertical";
+  class?: string;
+};
+
+const {
+  width = "w-24",
+  height = 6,
+  strokeWidth = 2,
+  orientation = "horizontal",
+  class: extra = "",
+} = Astro.props;
+
+const horizontalPath =
+  "M 0.5 5.6 " +
+  "C 6 4.2, 12 6.8, 18 5.1 " +
+  "S 30 3.4, 36 5.7 " +
+  "S 50 7.1, 56 4.4 " +
+  "S 70 3.8, 76 6.0 " +
+  "S 90 5.2, 99.5 4.6";
+
+// Vertical wobble through a 10x100 viewBox
+const verticalPath =
+  "M 5.6 0.5 " +
+  "C 4.2 6, 6.8 12, 5.1 18 " +
+  "S 3.4 30, 5.7 36 " +
+  "S 7.1 50, 4.4 56 " +
+  "S 3.8 70, 6.0 76 " +
+  "S 5.2 90, 4.6 99.5";
+---
+
+{
+  orientation === "horizontal" ? (
+    <svg
+      class:list={[width, extra, "block text-foreground"]}
+      height={height}
+      viewBox="0 0 100 10"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      stroke-width={strokeWidth}
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d={horizontalPath} />
+    </svg>
+  ) : (
+    <svg
+      class:list={[extra, "block text-foreground"]}
+      width={height}
+      viewBox="0 0 10 100"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      stroke-width={strokeWidth}
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d={verticalPath} />
+    </svg>
+  )
+}

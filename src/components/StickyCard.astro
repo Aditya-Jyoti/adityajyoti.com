@@ -1,0 +1,127 @@
+---
+import Tape from "./Tape.astro";
+
+type Props = {
+  href: string;
+  faceClass?: string;
+  handdrawn?: string;
+  seed?: string;
+};
+
+const {
+  href,
+  faceClass = "lg:h-48 h-[14.5rem]",
+  handdrawn = "handdrawn-3",
+  seed = href,
+} = Astro.props;
+
+const colors = ["yellow", "red", "aqua", "blue", "purple", "green"] as const;
+function hash(s: string) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+const h = hash(seed);
+const tape1Color = colors[h % colors.length];
+const tape2Color = colors[(h >> 3) % colors.length];
+const rot1 = -16 + ((h >> 5) % 10); // -16 to -7
+const rot2 = 7 + ((h >> 7) % 10); // 7 to 16
+const showSecond = (h >> 9) % 3 !== 0;
+---
+
+<section class="card-wrap relative block w-full">
+  <div
+    class:list={[
+      handdrawn,
+      "paper-back paper-back-2 wobble absolute inset-0 border-2 border-foreground",
+    ]}
+  >
+  </div>
+  <div
+    class:list={[
+      handdrawn,
+      "paper-back paper-back-1 wobble absolute inset-0 border-2 border-foreground",
+    ]}
+  >
+  </div>
+
+  <a
+    href={href}
+    class:list={[
+      handdrawn,
+      faceClass,
+      "card-face relative block w-full bg-background p-4 text-foreground hover:text-foreground",
+    ]}
+  >
+    <div
+      class:list={[
+        handdrawn,
+        "card-face-border wobble pointer-events-none absolute inset-0 border-2 border-foreground",
+      ]}
+    >
+    </div>
+    <div class="relative z-10 h-full">
+      <slot />
+    </div>
+  </a>
+
+  <Tape color={tape1Color} side="left" inset={14} top="0px" rotate={rot1} width={62} />
+  {
+    showSecond && (
+      <Tape
+        color={tape2Color}
+        side="right"
+        inset={14}
+        top="0px"
+        rotate={rot2}
+        width={58}
+      />
+    )
+  }
+</section>
+
+<style>
+  .card-face,
+  .paper-back {
+    transition:
+      transform 220ms ease,
+      box-shadow 220ms ease;
+  }
+  .wobble {
+    filter: url(#card-wobble);
+  }
+  .paper-back-1 {
+    background: #ecdfa8;
+    transform: translate(3px, 3px) rotate(0.5deg);
+    z-index: 0;
+  }
+  .paper-back-2 {
+    background: #1d2021;
+    transform: translate(6px, 6px) rotate(-0.7deg);
+    z-index: -1;
+  }
+  .card-face {
+    z-index: 1;
+  }
+  .card-wrap:hover .card-face {
+    transform: translate(-1px, -2px) rotate(-0.3deg);
+  }
+  .card-wrap:hover .paper-back-1 {
+    transform: translate(4px, 4px) rotate(0.7deg);
+  }
+  .card-wrap:hover .paper-back-2 {
+    transform: translate(8px, 8px) rotate(-1deg);
+  }
+  .card-wrap:active .card-face {
+    transform: translate(1px, 1px) rotate(0deg);
+    transition-duration: 80ms;
+  }
+  .card-wrap:active .paper-back-1 {
+    transform: translate(2px, 2px) rotate(0.3deg);
+    transition-duration: 80ms;
+  }
+  .card-wrap:active .paper-back-2 {
+    transform: translate(4px, 4px) rotate(-0.5deg);
+    transition-duration: 80ms;
+  }
+</style>
