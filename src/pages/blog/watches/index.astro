@@ -1,0 +1,376 @@
+---
+import BaseHead from "../../../components/BaseHead.astro";
+import Header from "../../../components/Header.astro";
+import Footer from "../../../components/Footer.astro";
+import FormattedDate from "../../../components/FormattedDate.astro";
+import BackgroundDoodles from "../../../components/BackgroundDoodles.astro";
+import { type CollectionEntry, getCollection } from "astro:content";
+import "../../../styles/global.css";
+
+const WATCHES_TITLE = "Aditya Watches";
+const WATCHES_DESCRIPTION =
+  "My attention span is in shambles but i still try to consume meaningful media (atleast to me) some times. This is my attempt at logging them so I don't forget about them and can give recommendations to people";
+
+type WatchPost = CollectionEntry<"watches">;
+
+const all = (await getCollection("watches")).sort((a: WatchPost, b: WatchPost) => {
+  const ad = a.data.date?.valueOf() ?? 0;
+  const bd = b.data.date?.valueOf() ?? 0;
+  if (bd !== ad) return bd - ad;
+  return a.data.title.localeCompare(b.data.title);
+});
+
+type Progress = WatchPost["data"]["progress"];
+
+const progressMeta: Record<Progress, { label: string; badge: string }> = {
+  consuming: { label: "consuming", badge: "bg-blue" },
+  want: { label: "backlog", badge: "bg-yellow" },
+  finished: { label: "finished", badge: "bg-green" },
+  dropped: { label: "dropped", badge: "bg-red" },
+};
+const order: Progress[] = ["consuming", "want", "finished", "dropped"];
+
+// sort by progress priority, then most-recent date
+const items = [...all].sort((a, b) => {
+  const pa = order.indexOf(a.data.progress);
+  const pb = order.indexOf(b.data.progress);
+  if (pa !== pb) return pa - pb;
+  return (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0);
+});
+
+// filter options derived from the data
+const progressOptions = order.filter((p) =>
+  all.some((i) => i.data.progress === p)
+);
+const mediaOptions = [...new Set(all.map((i) => i.data.mediaType))].sort();
+const genreOptions = [
+  ...new Set(all.flatMap((i) => i.data.genre)),
+].sort();
+
+const formatRating = (r: number) =>
+  Number.isInteger(r) ? r.toFixed(0) : r.toFixed(1);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={WATCHES_TITLE} description={WATCHES_DESCRIPTION} />
+    <script is:inline>
+      try {
+        if (localStorage.getItem("blog-font") === "sketch") {
+          document.documentElement.classList.add("font-sketch");
+        }
+      } catch (e) {}
+    </script>
+    <style is:global>
+      /* Card text defaults to the readable font; toggle swaps to handwriting. */
+      .watch-typeface {
+        font-family: "Roboto", sans-serif;
+      }
+      html.font-sketch .watch-typeface {
+        font-family: "Excalifont", sans-serif;
+      }
+    </style>
+  </head>
+
+  <body
+    class="bg-background text-foreground flex flex-col min-h-screen lg:w-[60%] p-4 lg:p-0 mx-auto font-handwriting relative overflow-x-clip"
+  >
+    <BackgroundDoodles />
+    <Header back="/blog" backLabel="blogs" />
+    <main class="flex-grow">
+      <div class="text-3xl font-bold pt-4">{WATCHES_TITLE}</div>
+      <div class="lg:text-lg text-base p-4 pt-2">{WATCHES_DESCRIPTION}</div>
+
+      <!-- filter bar -->
+      <div class="mb-6 mx-1 flex flex-col gap-3">
+        <div class="flex justify-end">
+          <button
+            type="button"
+            class="watch-font-btn font-handwriting inline-flex items-center gap-2 text-sm border-2 border-foreground bg-background text-foreground px-3 py-1 handdrawn-2 hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out"
+            aria-label="Toggle card font"
+          >
+            <span>font:</span>
+            <span class="watch-font-label font-bold">readable</span>
+          </button>
+        </div>
+
+        <div class="relative h-11">
+          <label for="watch-search" class="sr-only">Search media</label>
+          <input
+            id="watch-search"
+            type="text"
+            autocomplete="off"
+            placeholder="search titles, genres, notes..."
+            class="absolute top-0 left-0 w-full h-full px-4 text-base border-2 z-10 border-foreground bg-background handdrawn-2 text-foreground placeholder-foreground/60 focus:outline-none hover:translate-x-0.5 hover:translate-y-0.5 focus:translate-x-0.5 focus:translate-y-0.5 transition-all duration-300 ease-in-out"
+          />
+          <div
+            class="absolute top-0 left-0 w-full h-full border-2 bg-foreground border-foreground translate-x-1 translate-y-1 handdrawn-2"
+          >
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-2 text-sm">
+          <span class="opacity-60 mr-1">status</span>
+          <button
+            class="watch-pill is-active border-2 border-foreground bg-foreground text-background px-2.5 py-0.5 handdrawn-2 transition-all duration-200"
+            data-group="progress"
+            data-value="">all</button
+          >
+          {
+            progressOptions.map((p) => (
+              <button
+                class="watch-pill border-2 border-foreground bg-background text-foreground px-2.5 py-0.5 handdrawn-2 transition-all duration-200"
+                data-group="progress"
+                data-value={p}
+              >
+                {progressMeta[p].label}
+              </button>
+            ))
+          }
+        </div>
+
+        {
+          mediaOptions.length > 1 && (
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-2 text-sm">
+              <span class="opacity-60 mr-1">type</span>
+              <button
+                class="watch-pill is-active border-2 border-foreground bg-foreground text-background px-2.5 py-0.5 handdrawn-3 transition-all duration-200"
+                data-group="media"
+                data-value=""
+              >
+                all
+              </button>
+              {mediaOptions.map((m) => (
+                <button
+                  class="watch-pill border-2 border-foreground bg-background text-foreground px-2.5 py-0.5 handdrawn-3 transition-all duration-200 lowercase"
+                  data-group="media"
+                  data-value={m.toLowerCase()}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+          )
+        }
+
+        {
+          genreOptions.length > 0 && (
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-2 text-sm">
+              <span class="opacity-60 mr-1">genre</span>
+              {genreOptions.map((g) => (
+                <button
+                  class="watch-pill border-2 border-foreground bg-background text-foreground px-2.5 py-0.5 handdrawn-1 transition-all duration-200"
+                  data-group="genre"
+                  data-value={g.toLowerCase()}
+                >
+                  #{g}
+                </button>
+              ))}
+            </div>
+          )
+        }
+      </div>
+
+      <!-- compact grid -->
+      <section
+        id="watch-grid"
+        class="watch-typeface grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-5"
+      >
+        {
+          items.map((post, i) => {
+            const card = (i % 5) + 1;
+            const shadow = ((i + 2) % 5) + 1;
+            const meta = progressMeta[post.data.progress];
+            return (
+              <div
+                class="watch-card relative"
+                data-progress={post.data.progress}
+                data-media={post.data.mediaType.toLowerCase()}
+                data-genres={post.data.genre
+                  .map((g) => g.toLowerCase())
+                  .join("|")}
+                data-search={[
+                  post.data.title,
+                  post.data.mediaType,
+                  post.data.genre.join(" "),
+                  post.data.notes || "",
+                ]
+                  .join(" ")
+                  .toLowerCase()}
+              >
+                <div
+                  class={`relative z-10 flex flex-col gap-1.5 p-3 h-full border-2 border-foreground bg-background handdrawn-${card}`}
+                >
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="text-base font-bold leading-tight">
+                      {post.data.title}
+                    </div>
+                    {post.data.rating !== undefined && (
+                      <span class="shrink-0 text-xs font-bold bg-yellow border-2 border-foreground px-1.5 py-0.5 handdrawn-2">
+                        ★{formatRating(post.data.rating)}
+                      </span>
+                    )}
+                  </div>
+
+                  <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                    <span
+                      class={`font-bold border-2 border-foreground ${meta.badge} px-1.5 py-0.5 handdrawn-1`}
+                    >
+                      {meta.label}
+                    </span>
+                    <span class="opacity-70 lowercase">{post.data.mediaType}</span>
+                    {post.data.genre.length > 0 && (
+                      <span class="opacity-60 truncate">
+                        · {post.data.genre.join(", ")}
+                      </span>
+                    )}
+                  </div>
+
+                  {post.data.notes && (
+                    <div class="text-sm leading-snug line-clamp-2 opacity-90">
+                      {post.data.notes}
+                    </div>
+                  )}
+
+                  {(post.data.startDate || post.data.finishedDate) && (
+                    <div class="mt-auto pt-1 text-[0.7rem] opacity-60 flex flex-wrap gap-x-2">
+                      {post.data.startDate && (
+                        <span>
+                          started <FormattedDate date={post.data.startDate} />
+                        </span>
+                      )}
+                      {post.data.finishedDate && (
+                        <span>
+                          finished{" "}
+                          <FormattedDate date={post.data.finishedDate} />
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div
+                  class={`absolute inset-0 border-2 border-foreground bg-foreground translate-x-1 translate-y-1 handdrawn-${shadow}`}
+                />
+              </div>
+            );
+          })
+        }
+      </section>
+
+      {
+        all.length === 0 && (
+          <div class="text-center text-lg lg:text-xl py-12 opacity-70">
+            nothing logged yet — the watchlist is empty :)
+          </div>
+        )
+      }
+
+      <div
+        id="no-results"
+        class="hidden text-center text-lg lg:text-xl py-12 opacity-70"
+      >
+        nothing matches your filters :(
+      </div>
+    </main>
+    <Footer />
+
+    <script>
+      // ---- card font toggle (readable <-> handwriting) ----
+      const html = document.documentElement;
+      const fontBtn = document.querySelector<HTMLButtonElement>(
+        ".watch-font-btn"
+      );
+      const fontLabel = document.querySelector<HTMLElement>(
+        ".watch-font-label"
+      );
+      const applyFont = (mode: "readable" | "sketch") => {
+        html.classList.toggle("font-sketch", mode === "sketch");
+        if (fontLabel)
+          fontLabel.textContent =
+            mode === "sketch" ? "handwriting" : "readable";
+      };
+      try {
+        applyFont(
+          localStorage.getItem("blog-font") === "sketch"
+            ? "sketch"
+            : "readable"
+        );
+      } catch {}
+      fontBtn?.addEventListener("click", () => {
+        const next = html.classList.contains("font-sketch")
+          ? "readable"
+          : "sketch";
+        try {
+          localStorage.setItem("blog-font", next);
+        } catch {}
+        applyFont(next);
+      });
+
+      // ---- filtering ----
+      const search = document.getElementById(
+        "watch-search"
+      ) as HTMLInputElement | null;
+      const cards = Array.from(
+        document.querySelectorAll<HTMLElement>(".watch-card")
+      );
+      const pills = Array.from(
+        document.querySelectorAll<HTMLButtonElement>(".watch-pill")
+      );
+      const empty = document.getElementById("no-results");
+
+      const state = {
+        progress: "",
+        media: "",
+        genres: new Set<string>(),
+      };
+
+      const setActive = (btn: HTMLElement, on: boolean) => {
+        btn.classList.toggle("is-active", on);
+        btn.classList.toggle("bg-foreground", on);
+        btn.classList.toggle("text-background", on);
+        btn.classList.toggle("bg-background", !on);
+        btn.classList.toggle("text-foreground", !on);
+      };
+
+      const apply = () => {
+        const q = (search?.value || "").trim().toLowerCase();
+        let visible = 0;
+        cards.forEach((card) => {
+          const genres = (card.dataset.genres || "").split("|").filter(Boolean);
+          const ok =
+            (!state.progress || card.dataset.progress === state.progress) &&
+            (!state.media || card.dataset.media === state.media) &&
+            (state.genres.size === 0 ||
+              genres.some((g) => state.genres.has(g))) &&
+            (!q || (card.dataset.search || "").includes(q));
+          card.style.display = ok ? "" : "none";
+          if (ok) visible++;
+        });
+        if (empty) empty.classList.toggle("hidden", visible !== 0);
+      };
+
+      pills.forEach((btn) => {
+        const group = btn.dataset.group!;
+        const value = btn.dataset.value || "";
+        btn.addEventListener("click", () => {
+          if (group === "genre") {
+            const on = !btn.classList.contains("is-active");
+            setActive(btn, on);
+            if (on) state.genres.add(value);
+            else state.genres.delete(value);
+          } else {
+            // single-select: clear siblings, activate this one
+            pills
+              .filter((p) => p.dataset.group === group)
+              .forEach((p) => setActive(p, p === btn));
+            (state as any)[group] = value;
+          }
+          apply();
+        });
+      });
+
+      search?.addEventListener("input", apply);
+    </script>
+  </body>
+</html>

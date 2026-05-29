@@ -3,146 +3,210 @@ import BaseHead from "../../components/BaseHead.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 import BackgroundDoodles from "../../components/BackgroundDoodles.astro";
-import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
-import { getCollection } from "astro:content";
 import FormattedDate from "../../components/FormattedDate.astro";
+import Squiggle from "../../components/Squiggle.astro";
+import StickyCard from "../../components/StickyCard.astro";
+import { getCollection } from "astro:content";
 import "../../styles/global.css";
 
-const posts = (await getCollection("blog")).sort(
+const BLOG_TITLE = "Aditya's Blogs";
+const BLOG_DESCRIPTION =
+  "Three little corners of the internet that are mine. I write long-form posts, log the places I eat at, and track the media I consume. Pick a rabbit hole.";
+
+const writes = (await getCollection("blog")).sort(
   (a: { data: { pubDate: Date } }, b: { data: { pubDate: Date } }) =>
     b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
+const eats = (await getCollection("khana")).sort(
+  (a: { data: { dateOfVisit: Date } }, b: { data: { dateOfVisit: Date } }) =>
+    b.data.dateOfVisit.valueOf() - a.data.dateOfVisit.valueOf()
+);
+const watches = (await getCollection("watches")).sort(
+  (a: { data: { date?: Date } }, b: { data: { date?: Date } }) =>
+    (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0)
+);
 
-const styles = posts.map(() => ({
-  card: Math.floor(Math.random() * 5) + 1,
-  shadow: Math.floor(Math.random() * 5) + 1,
-}));
+const progressLabel: Record<string, string> = {
+  consuming: "currently consuming",
+  want: "want to consume",
+  finished: "finished",
+  dropped: "left",
+};
+
+const lw = writes[0];
+const le = eats[0];
+const lc = watches[0];
+
+// Most recent item from each blog, normalised into a single shape.
+const latest = [
+  lw && {
+    kicker: "Aditya Writes",
+    href: `/blog/writes/${lw.id}`,
+    title: lw.data.title,
+    blurb: lw.data.description,
+    meta: null as string | null,
+    date: lw.data.pubDate,
+  },
+  le && {
+    kicker: "Aditya Eats",
+    href: `/blog/eats/${le.id}`,
+    title: le.data.title,
+    blurb: le.data.description,
+    meta: `★ ${
+      Number.isInteger(le.data.rating)
+        ? le.data.rating.toFixed(0)
+        : le.data.rating.toFixed(1)
+    }/5 · ${le.data.location}`,
+    date: le.data.dateOfVisit,
+  },
+  lc && {
+    kicker: "Aditya Watches",
+    href: `/blog/watches`,
+    title: lc.data.title,
+    blurb: lc.data.notes ?? null,
+    meta: `${lc.data.mediaType} · ${progressLabel[lc.data.progress]}`,
+    date: lc.data.date ?? null,
+  },
+].filter(Boolean) as {
+  kicker: string;
+  href: string;
+  title: string;
+  blurb: string | null;
+  meta: string | null;
+  date: Date | null;
+}[];
+
+const sections = [
+  {
+    href: "/blog/writes",
+    title: "Aditya Writes",
+    blurb:
+      "Long-form posts about programming, productivity and the lessons from shipping (and breaking) things.",
+    count: writes.length,
+    noun: writes.length === 1 ? "post" : "posts",
+    card: 1,
+    shadow: 3,
+  },
+  {
+    href: "/blog/eats",
+    title: "Aditya Eats",
+    blurb:
+      "A running log of the places I eat at, with ratings and recommendations. What is life if not a gluttonous one.",
+    count: eats.length,
+    noun: eats.length === 1 ? "spot" : "spots",
+    card: 4,
+    shadow: 2,
+  },
+  {
+    href: "/blog/watches",
+    title: "Aditya Watches",
+    blurb:
+      "Anime, manga and other media I'm consuming, have finished, or want to get to — logged so I don't forget.",
+    count: watches.length,
+    noun: watches.length === 1 ? "title" : "titles",
+    card: 5,
+    shadow: 4,
+  },
+];
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <BaseHead title={BLOG_TITLE} description={BLOG_DESCRIPTION} />
   </head>
 
   <body
     class="bg-background text-foreground flex flex-col min-h-screen lg:w-[60%] p-4 lg:p-0 mx-auto font-handwriting relative overflow-x-clip"
   >
     <BackgroundDoodles />
-    <Header />
-    <main class="flex-grow">
-      <div class="text-3xl font-bold pt-4">Aditya Writes...</div>
-      <div class="lg:text-xl text-lg p-4">
-        I have always wanted to maintain a blog, a place where I could write
-        about what's happening in life and document the cool stuff I find. The
-        only issue is, is that I am hella lazy. But, I am going to try and keep
-        this blog updated with the cool stuff I find and the cool stuff I do.
-        So, here is my blog. Enjoy!
-      </div>
+    <Header back="/" backLabel="home" />
+    <main class="flex-grow flex flex-col gap-10 pb-6">
+      <!-- intro -->
+      <section class="pt-4">
+        <h1 class="text-4xl lg:text-5xl font-black">Aditya's Blogs</h1>
+        <Squiggle class="w-40 mt-1" />
+        <p class="lg:text-xl text-lg mt-3 max-w-2xl">{BLOG_DESCRIPTION}</p>
+      </section>
 
-      <!-- search -->
-      <div class="relative h-12 mb-6 mx-1">
-        <label for="blog-search" class="sr-only">Search posts</label>
-        <input
-          id="blog-search"
-          type="text"
-          autocomplete="off"
-          placeholder="search posts..."
-          class="absolute top-0 left-0 w-full h-full px-4 text-lg border-2 z-10 border-foreground bg-background handdrawn-2 text-foreground placeholder-foreground/60 focus:outline-none hover:translate-x-0.5 hover:translate-y-0.5 focus:translate-x-0.5 focus:translate-y-0.5 transition-all duration-300 ease-in-out"
-        />
-        <div
-          class="absolute top-0 left-0 w-full h-full border-2 bg-foreground border-foreground translate-x-1 translate-y-1 handdrawn-2"
-        >
-        </div>
-      </div>
+      <!-- latest across the blogs -->
+      {
+        latest.length > 0 && (
+          <section class="flex flex-col gap-6">
+            <div class="flex flex-col w-full items-end">
+              <h2 class="lg:text-3xl text-2xl font-bold">fresh off the press</h2>
+              <Squiggle class="w-28" />
+            </div>
 
-      <section>
-        <div
-          id="blog-list"
-          class="grid lg:grid-cols-2 grid-cols-1 gap-x-5 gap-y-6"
-        >
-          {
-            posts.map(
-              (
-                post: {
-                  id: any;
-                  data: {
-                    title: string;
-                    pubDate: Date;
-                    description: string;
-                    updatedDate?: Date;
-                  };
-                },
-                i: number
-              ) => (
-                <div
-                  class="blog-card relative"
-                  data-title={post.data.title.toLowerCase()}
-                  data-description={post.data.description.toLowerCase()}
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-10 mt-2">
+              {latest.map((item) => (
+                <StickyCard
+                  href={item.href}
+                  seed={item.title}
+                  handdrawn={`handdrawn-${(item.title.length % 5) + 1}`}
+                  faceClass="min-h-[11rem] lg:h-60"
                 >
-                  <a
-                    href={`/blog/${post.id}/`}
-                    class={`relative z-10 flex flex-col gap-2 p-4 h-full border-2 border-foreground bg-background hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out handdrawn-${styles[i].card}`}
-                  >
-                    <div class="lg:text-xl text-lg font-bold leading-tight">
-                      {post.data.title}
-                    </div>
-                    <div class="text-base flex-grow">
-                      {post.data.description}
-                    </div>
-                    <div class="flex justify-between items-end pt-1 text-sm gap-2">
-                      <span class="font-bold">
-                        <FormattedDate date={post.data.pubDate} />
+                  <div class="flex flex-col gap-2 w-full h-full">
+                    <span class="text-xs font-bold uppercase tracking-wide opacity-60">
+                      {item.kicker}
+                    </span>
+                    <span class="lg:text-xl text-lg font-bold leading-tight">
+                      {item.title}
+                    </span>
+                    {item.blurb && (
+                      <span class="text-sm lg:text-base flex-grow line-clamp-3">
+                        {item.blurb}
                       </span>
-                      <span class="opacity-70 text-xs lg:text-sm">
-                        updated{" "}
-                        <FormattedDate
-                          date={post.data.updatedDate || post.data.pubDate}
-                        />
-                      </span>
+                    )}
+                    <div class="mt-auto flex flex-col gap-0.5 text-xs opacity-70">
+                      {item.meta && <span>{item.meta}</span>}
+                      {item.date && <FormattedDate date={item.date} />}
                     </div>
-                  </a>
-                  <div
-                    class={`absolute inset-0 border-2 border-foreground bg-foreground translate-x-1 translate-y-2 handdrawn-${styles[i].shadow}`}
-                  />
-                </div>
-              )
-            )
-          }
+                  </div>
+                </StickyCard>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <!-- the blogs -->
+      <section class="flex flex-col gap-6">
+        <div class="flex flex-col w-full">
+          <h2 class="lg:text-3xl text-2xl font-bold">the blogs</h2>
+          <Squiggle class="w-20" />
         </div>
 
-        <div
-          id="no-results"
-          class="hidden text-center text-lg lg:text-xl py-12 opacity-70"
-        >
-          no posts match your search :(
+        <div class="grid lg:grid-cols-3 grid-cols-1 gap-x-5 gap-y-6 mt-2">
+          {
+            sections.map((s) => (
+              <div class="relative">
+                <a
+                  href={s.href}
+                  class={`relative z-10 flex flex-col gap-2 p-5 h-full border-2 border-foreground bg-background hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out handdrawn-${s.card}`}
+                >
+                  <div class="flex items-baseline justify-between gap-2">
+                    <span class="text-xl font-bold leading-tight">
+                      {s.title}
+                    </span>
+                    <span class="text-xs font-bold shrink-0 opacity-70">
+                      {s.count} {s.noun}
+                    </span>
+                  </div>
+                  <span class="text-sm lg:text-base flex-grow">{s.blurb}</span>
+                  <span class="text-sm font-bold underline underline-offset-2">
+                    open →
+                  </span>
+                </a>
+                <div
+                  class={`absolute inset-0 border-2 border-foreground bg-foreground translate-x-1 translate-y-2 handdrawn-${s.shadow}`}
+                />
+              </div>
+            ))
+          }
         </div>
       </section>
     </main>
     <Footer />
-
-    <script>
-      const search = document.getElementById(
-        "blog-search"
-      ) as HTMLInputElement | null;
-      const cards = document.querySelectorAll<HTMLElement>(".blog-card");
-      const empty = document.getElementById("no-results");
-
-      const filter = () => {
-        if (!search) return;
-        const q = search.value.trim().toLowerCase();
-        let visible = 0;
-        cards.forEach((card) => {
-          const title = card.dataset.title || "";
-          const description = card.dataset.description || "";
-          const matches = !q || title.includes(q) || description.includes(q);
-          card.style.display = matches ? "" : "none";
-          if (matches) visible++;
-        });
-        if (empty) empty.classList.toggle("hidden", visible !== 0);
-      };
-
-      search?.addEventListener("input", filter);
-    </script>
   </body>
 </html>

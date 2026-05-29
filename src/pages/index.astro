@@ -24,6 +24,17 @@ const allEats = (await getCollection("khana")).sort(
 const mostRecentPinned = allEats.find((p: any) => p.data.pinned);
 const mostRecent = allEats.find((p: any) => p.id !== mostRecentPinned?.id);
 const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
+
+const allWatches = (await getCollection("watches")).sort(
+  (a: any, b: any) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0)
+);
+const featuredWatches = allWatches.slice(0, 2);
+const watchProgressLabel: Record<string, string> = {
+  consuming: "currently consuming",
+  want: "want to consume",
+  finished: "finished",
+  dropped: "left",
+};
 ---
 
 <!doctype html>
@@ -256,7 +267,7 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
           <Squiggle class="w-32" />
         </div>
         <!-- content -->
-        <section class="flex flex-col gap-4">
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-8">
           {
             posts
               .slice(0, 2)
@@ -266,19 +277,19 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
                   id: any;
                 }) => (
                   <StickyCard
-                    href={`/blog/${post.id}`}
+                    href={`/blog/writes/${post.id}`}
                     seed={String(post.id)}
                     handdrawn={`handdrawn-${(String(post.id).length % 5) + 1}`}
-                    faceClass="lg:h-48 h-[14.5rem]"
+                    faceClass="min-h-[9.5rem] lg:h-44"
                   >
-                    <div class="flex flex-col gap-4 w-full h-full">
-                      <span class="lg:text-2xl text-lg font-bold">
+                    <div class="flex flex-col gap-2 w-full h-full">
+                      <span class="text-lg lg:text-xl font-bold leading-tight">
                         {post.data.title}
                       </span>
-                      <span class="lg:text-xl text-sm flex-grow">
+                      <span class="text-sm lg:text-base flex-grow line-clamp-2">
                         {post.data.description}
                       </span>
-                      <div class="w-full flex lg:text-xl text-lg justify-between">
+                      <div class="w-full flex text-sm lg:text-base justify-between opacity-80">
                         <FormattedDate date={post.data.pubDate} />
                       </div>
                     </div>
@@ -291,7 +302,7 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
         <div class="lg:text-xl my-2">
           I maintain (try) a blog called <i class="font-bold">Aditya Writes</i>.
           You can check more of my posts <a
-            href="/blog"
+            href="/blog/writes"
             target="_blank"
             class="underline underline-offset-2">here</a
           >...
@@ -307,7 +318,7 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
               <Squiggle class="w-28" />
             </div>
 
-            <section class="flex flex-col gap-4">
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-8">
               {featuredEats.map(
                 (post: {
                   id: any;
@@ -321,28 +332,28 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
                   };
                 }) => (
                   <StickyCard
-                    href={`/khana/${post.id}`}
+                    href={`/blog/eats/${post.id}`}
                     seed={String(post.id)}
                     handdrawn={`handdrawn-${(String(post.id).length % 5) + 1}`}
-                    faceClass="lg:h-52 h-[16rem]"
+                    faceClass="min-h-[10.5rem] lg:h-48"
                   >
-                    <div class="flex flex-col gap-3 w-full h-full">
+                    <div class="flex flex-col gap-2 w-full h-full">
                       <div class="flex justify-between items-start gap-2">
-                        <span class="lg:text-2xl text-lg font-bold leading-tight">
+                        <span class="text-lg lg:text-xl font-bold leading-tight">
                           {post.data.title}
                         </span>
-                        <span class="shrink-0 text-sm lg:text-base font-bold bg-yellow border-2 border-foreground px-2 py-0.5 handdrawn-2">
+                        <span class="shrink-0 text-xs lg:text-sm font-bold bg-yellow border-2 border-foreground px-2 py-0.5 handdrawn-2">
                           ★ {Number.isInteger(post.data.rating) ? post.data.rating.toFixed(0) : post.data.rating.toFixed(1)}/5
                         </span>
                       </div>
-                      <span class="lg:text-xl text-sm flex-grow">
+                      <span class="text-sm lg:text-base flex-grow line-clamp-2">
                         {post.data.description}
                       </span>
-                      <div class="flex flex-wrap gap-x-3 gap-y-1 lg:text-base text-sm opacity-80">
+                      <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs lg:text-sm opacity-80">
                         <span>📍 {post.data.location}</span>
                         <span>🍽 {post.data.cuisine}</span>
                       </div>
-                      <div class="w-full flex lg:text-xl text-lg justify-between">
+                      <div class="w-full flex text-sm lg:text-base justify-between opacity-80">
                         <FormattedDate date={post.data.dateOfVisit} />
                       </div>
                     </div>
@@ -356,7 +367,83 @@ const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
               <i class="font-bold">Aditya Eats</i> where I document the places I
               eat at. You can find the full list{" "}
               <a
-                href="/khana"
+                href="/blog/eats"
+                target="_blank"
+                class="underline underline-offset-2"
+              >
+                here
+              </a>
+              ...
+            </div>
+          </section>
+        )
+      }
+
+      <!-- watches -->
+      {
+        featuredWatches.length > 0 && (
+          <section id="watches" class="flex flex-col gap-4">
+            <div class="flex flex-col w-full items-end">
+              <h2 class="lg:text-4xl text-2xl font-bold">I Also Watch</h2>
+              <Squiggle class="w-32" />
+            </div>
+
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-8">
+              {featuredWatches.map(
+                (post: {
+                  id: any;
+                  data: {
+                    title: string;
+                    mediaType: string;
+                    progress: string;
+                    rating?: number;
+                    notes?: string;
+                    date?: Date;
+                  };
+                }) => (
+                  <StickyCard
+                    href="/blog/watches"
+                    seed={String(post.id)}
+                    handdrawn={`handdrawn-${(String(post.id).length % 5) + 1}`}
+                    faceClass="min-h-[10.5rem] lg:h-48"
+                  >
+                    <div class="flex flex-col gap-2 w-full h-full">
+                      <div class="flex justify-between items-start gap-2">
+                        <span class="text-lg lg:text-xl font-bold leading-tight">
+                          {post.data.title}
+                        </span>
+                        {post.data.rating !== undefined && (
+                          <span class="shrink-0 text-xs lg:text-sm font-bold bg-yellow border-2 border-foreground px-2 py-0.5 handdrawn-2">
+                            ★ {Number.isInteger(post.data.rating) ? post.data.rating.toFixed(0) : post.data.rating.toFixed(1)}/5
+                          </span>
+                        )}
+                      </div>
+                      <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs lg:text-sm opacity-80">
+                        <span class="lowercase">🎬 {post.data.mediaType}</span>
+                        <span>· {watchProgressLabel[post.data.progress]}</span>
+                      </div>
+                      {post.data.notes && (
+                        <span class="text-sm lg:text-base flex-grow line-clamp-2">
+                          {post.data.notes}
+                        </span>
+                      )}
+                      {post.data.date && (
+                        <div class="w-full flex text-sm lg:text-base justify-between opacity-80">
+                          <FormattedDate date={post.data.date} />
+                        </div>
+                      )}
+                    </div>
+                  </StickyCard>
+                )
+              )}
+            </section>
+
+            <div class="lg:text-xl my-2">
+              I also track the media I consume over at{" "}
+              <i class="font-bold">Aditya Watches</i>. You can browse the full
+              list{" "}
+              <a
+                href="/blog/watches"
                 target="_blank"
                 class="underline underline-offset-2"
               >

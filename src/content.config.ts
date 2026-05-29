@@ -42,4 +42,23 @@ const khana = defineCollection({
     }),
 });
 
-export const collections = { blog, khana };
+const watches = defineCollection({
+  loader: glob({
+    base: "./src/content/watches",
+    pattern: ["**/*.{md,mdx}", "!**/README.md"],
+  }),
+  schema: z.object({
+    title: z.string(),
+    // movie | manga | anime | light novel | book | articles | other (free string allows custom types)
+    mediaType: z.string(),
+    genre: z.array(z.string()).optional().default([]),
+    rating: z.number().min(0).max(5).optional(),
+    progress: z.enum(["consuming", "want", "finished", "dropped"]),
+    notes: z.string().optional(),
+    startDate: z.coerce.date().optional(),
+    finishedDate: z.coerce.date().optional(),
+    date: z.coerce.date().optional(),
+  }),
+});
+
+export const collections = { blog, khana, watches };

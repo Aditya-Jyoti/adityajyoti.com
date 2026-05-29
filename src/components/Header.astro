@@ -1,21 +1,78 @@
 ---
 import Squiggle from "./Squiggle.astro";
+
+interface Props {
+  /** Mobile-only back link target. Omit on the home page. */
+  back?: string;
+  backLabel?: string;
+}
+
+const { back, backLabel = "back" } = Astro.props;
+
+const blogLinks = [
+  {
+    label: "Writes",
+    href: "/blog/writes",
+    desc: "long-form posts on programming, productivity and shipping (and breaking) things.",
+  },
+  {
+    label: "Eats",
+    href: "/blog/eats",
+    desc: "a running log of the places I eat at, with ratings and recommendations.",
+  },
+  {
+    label: "Watches",
+    href: "/blog/watches",
+    desc: "anime, manga & other media I'm consuming, have finished, or want to get to.",
+  },
+];
 ---
 
 <div class="hidden lg:block">
   <nav class="flex justify-between items-center p-4 text-lg">
     <span class="font-bold text-2xl"
-      ><a href="https://adityajyoti.in/" class="text-foreground hover:text-foreground">Aditya Jyoti</a></span
+      ><a href="/" class="text-foreground hover:text-foreground">Aditya Jyoti</a></span
     >
 
-    <div class="flex gap-8 text-foreground hover:text-foreground">
-      <a href="/#root" class="text-foreground hover:text-foreground">Root</a>
-      <a href="/#projects" class="text-foreground hover:text-foreground">Projects</a>
-      <a href="/#whatido" class="text-foreground hover:text-foreground">What I Do</a>
+    <div class="flex gap-6 items-center text-foreground hover:text-foreground">
       <a href="/blog" class="text-foreground hover:text-foreground">Blog</a>
-      <a href="/khana" class="text-foreground hover:text-foreground">Eats</a>
+
+      <span class="opacity-50 select-none">[</span>
+      {
+        blogLinks.map((link, i) => (
+          <>
+            {i > 0 && <span class="opacity-50 select-none">,</span>}
+            <div class="relative group">
+              <a href={link.href} class="text-foreground hover:text-foreground">
+                {link.label}
+              </a>
+              <div class="absolute left-1/2 -translate-x-1/2 top-full pt-3 z-50 hidden group-hover:block">
+                <div class="border-2 border-foreground bg-background handdrawn-3 w-56 p-3 text-sm leading-snug normal-case">
+                  {link.desc}
+                </div>
+              </div>
+            </div>
+          </>
+        ))
+      }
+      <span class="opacity-50 select-none">]</span>
+
       <a href="/#contact" class="text-foreground hover:text-foreground">Contact</a>
     </div>
   </nav>
   <Squiggle class="w-full" />
 </div>
+
+{
+  back && (
+    <div class="lg:hidden pt-2 pb-1">
+      <a
+        href={back}
+        class="inline-flex items-center gap-1.5 text-base font-bold border-2 border-foreground bg-background text-foreground px-3 py-1 handdrawn-2 active:translate-x-0.5 active:translate-y-0.5 transition-all duration-200"
+      >
+        <span aria-hidden="true">←</span>
+        <span>{backLabel}</span>
+      </a>
+    </div>
+  )
+}
