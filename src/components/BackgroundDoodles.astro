@@ -125,13 +125,12 @@ function attempt(opts: {
   return null;
 }
 
-// Foreground-ish (regular opacity) doodles spread freely. About 60% of
-// them are flagged hideMobile so the layout doesn't feel crowded on small
-// screens (where the body fills the viewport and every doodle overlaps
-// content).
+// Foreground-ish (regular opacity) doodles spread freely. About a third
+// are flagged hideMobile so the side bands still feel populated on small
+// screens without overwhelming the content column.
 const PRIMARY_COUNT = 160;
 for (let i = 0; i < PRIMARY_COUNT; i++) {
-  const d = attempt({ centerWeighted: false, mobile: i % 5 !== 0 && i % 7 !== 0 });
+  const d = attempt({ centerWeighted: false, mobile: i % 3 === 0 });
   if (d) placed.push(d);
 }
 
