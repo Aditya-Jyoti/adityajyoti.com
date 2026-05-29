@@ -37,6 +37,19 @@ const lw = writes[0];
 const le = eats[0];
 const lc = watches[0];
 
+const fmtRating = (r: number) =>
+  Number.isInteger(r) ? r.toFixed(0) : r.toFixed(1);
+
+const lcMeta = lc
+  ? [
+      lc.data.mediaType,
+      progressLabel[lc.data.progress],
+      lc.data.rating !== undefined ? `★ ${fmtRating(lc.data.rating)}/5` : null,
+    ]
+      .filter(Boolean)
+      .join(" · ")
+  : null;
+
 // Most recent item from each blog, normalised into a single shape.
 const latest = [
   lw && {
@@ -63,8 +76,10 @@ const latest = [
     kicker: "Aditya Watches",
     href: `/blog/watches`,
     title: lc.data.title,
-    blurb: lc.data.notes ?? null,
-    meta: `${lc.data.mediaType} · ${progressLabel[lc.data.progress]}`,
+    blurb:
+      lc.data.notes ??
+      (lc.data.genre.length > 0 ? lc.data.genre.join(", ") : null),
+    meta: lcMeta,
     date: lc.data.date ?? null,
   },
 ].filter(Boolean) as {
@@ -121,12 +136,14 @@ const sections = [
   >
     <BackgroundDoodles />
     <Header back="/" backLabel="home" />
-    <main class="flex-grow flex flex-col gap-10 pb-6">
+    <main class="flex-grow flex flex-col gap-8 pb-6">
       <!-- intro -->
       <section class="pt-4">
         <h1 class="text-4xl lg:text-5xl font-black">Aditya's Blogs</h1>
         <Squiggle class="w-40 mt-1" />
-        <p class="lg:text-xl text-lg mt-3 max-w-2xl">{BLOG_DESCRIPTION}</p>
+        <p class="lg:text-xl text-lg mt-4 w-full leading-relaxed">
+          {BLOG_DESCRIPTION}
+        </p>
       </section>
 
       <!-- latest across the blogs -->
