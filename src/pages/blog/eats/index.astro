@@ -90,8 +90,8 @@ const formatRating = (r: number) =>
                         {post.data.description}
                       </div>
                       <div class="flex flex-wrap gap-x-3 gap-y-1 text-sm opacity-80">
-                        <span>📍 {post.data.location}</span>
-                        <span>🍽 {post.data.cuisine}</span>
+                        <span>{post.data.location}</span>
+                        <span>· {post.data.cuisine}</span>
                         <span>★ {formatRating(post.data.rating)}/5</span>
                       </div>
                       <div class="flex justify-between items-end pt-1 text-sm gap-2">
@@ -154,7 +154,7 @@ const formatRating = (r: number) =>
                 >
                   {post.data.pinned && (
                     <span class="absolute top-2 right-2 z-20 text-xs font-bold bg-yellow border-2 border-foreground px-2 py-0.5 handdrawn-2">
-                      📌 pinned
+                      pinned
                     </span>
                   )}
                   {post.data.heroImage && (
@@ -182,8 +182,8 @@ const formatRating = (r: number) =>
                       {post.data.description}
                     </div>
                     <div class="flex flex-wrap gap-x-3 gap-y-1 text-sm opacity-80">
-                      <span>📍 {post.data.location}</span>
-                      <span>🍽 {post.data.cuisine}</span>
+                      <span>{post.data.location}</span>
+                      <span>· {post.data.cuisine}</span>
                       <span>★ {formatRating(post.data.rating)}/5</span>
                     </div>
                     <div class="flex justify-between items-end pt-1 text-sm gap-2">

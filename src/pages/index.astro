@@ -340,8 +340,8 @@ const watchProgressLabel: Record<string, string> = {
                         {post.data.description}
                       </span>
                       <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs lg:text-sm opacity-80">
-                        <span>📍 {post.data.location}</span>
-                        <span>🍽 {post.data.cuisine}</span>
+                        <span>{post.data.location}</span>
+                        <span>· {post.data.cuisine}</span>
                       </div>
                       <div class="w-full flex text-sm lg:text-base justify-between opacity-80">
                         <FormattedDate date={post.data.dateOfVisit} />
@@ -403,7 +403,7 @@ const watchProgressLabel: Record<string, string> = {
                         )}
                       </div>
                       <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs lg:text-sm opacity-80">
-                        <span class="lowercase">🎬 {post.data.mediaType}</span>
+                        <span class="lowercase">{post.data.mediaType}</span>
                         <span>· {watchProgressLabel[post.data.progress]}</span>
                       </div>
                       <span class="text-sm lg:text-base flex-grow line-clamp-2">
@@ -448,7 +448,7 @@ const watchProgressLabel: Record<string, string> = {
           and I will respond promptly, or you can leave a message here.
         </div>
 
-        <!-- 👇 Formspree form starts here -->
+        <!-- Formspree form starts here -->
         <form
           action="https://formspree.io/f/xeozewvd"
           method="POST"

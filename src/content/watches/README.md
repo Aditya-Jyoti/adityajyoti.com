@@ -31,15 +31,15 @@ date: "2026-05-20"                         # optional — when added; used for s
 
 | field          | required | type              | notes                                                        |
 | -------------- | -------- | ----------------- | ------------------------------------------------------------ |
-| `title`        | ✅       | string            | The name of the thing.                                       |
-| `mediaType`    | ✅       | string            | Free text — use a known type below or add your own.          |
-| `genre`        | ❌       | list of strings   | Tags. Power the genre filter on the page. Defaults to empty. |
-| `rating`       | ❌       | number 0–5        | Whole or half numbers. Omit for things you haven't rated.    |
-| `progress`     | ✅       | one of the values | See "Progress" — this controls the colored status badge.     |
-| `notes`        | ❌       | string            | Short commentary shown on the card.                          |
-| `startDate`    | ❌       | date              | When you started. `YYYY-MM-DD`.                              |
-| `finishedDate` | ❌       | date              | When you finished. `YYYY-MM-DD`.                            |
-| `date`         | ❌       | date              | When the entry was added/updated. Used to sort newest-first. |
+| `title`        | yes      | string            | The name of the thing.                                       |
+| `mediaType`    | yes      | string            | Free text — use a known type below or add your own.          |
+| `genre`        | no       | list of strings   | Tags. Power the genre filter on the page. Defaults to empty. |
+| `rating`       | no       | number 0–5        | Whole or half numbers. Omit for things you haven't rated.    |
+| `progress`     | yes      | one of the values | See "Progress" — this controls the colored status badge.     |
+| `notes`        | no       | string            | Short commentary shown on the card.                          |
+| `startDate`    | no       | date              | When you started. `YYYY-MM-DD`.                              |
+| `finishedDate` | no       | date              | When you finished. `YYYY-MM-DD`.                             |
+| `date`         | no       | date              | When the entry was added/updated. Used to sort newest-first. |
 
 ## Progress (status badge)
 
