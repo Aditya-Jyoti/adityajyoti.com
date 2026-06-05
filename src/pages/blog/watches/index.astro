@@ -43,9 +43,6 @@ const progressOptions = order.filter((p) =>
   all.some((i) => i.data.progress === p)
 );
 const mediaOptions = [...new Set(all.map((i) => i.data.mediaType))].sort();
-const genreOptions = [
-  ...new Set(all.flatMap((i) => i.data.genre)),
-].sort();
 
 const formatRating = (r: number) =>
   Number.isInteger(r) ? r.toFixed(0) : r.toFixed(1);
@@ -148,23 +145,6 @@ const formatRating = (r: number) =>
                   data-value={m.toLowerCase()}
                 >
                   {m}
-                </button>
-              ))}
-            </div>
-          )
-        }
-
-        {
-          genreOptions.length > 0 && (
-            <div class="flex flex-wrap items-center gap-x-2 gap-y-2 text-sm">
-              <span class="opacity-60 mr-1">genre</span>
-              {genreOptions.map((g) => (
-                <button
-                  class="watch-pill border-2 border-foreground bg-background text-foreground px-2.5 py-0.5 handdrawn-1 transition-all duration-200"
-                  data-group="genre"
-                  data-value={g.toLowerCase()}
-                >
-                  #{g}
                 </button>
               ))}
             </div>
