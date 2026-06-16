@@ -24,10 +24,10 @@ const khana = defineCollection({
       imgDesc: z.string().optional(),
       heroImage: image().optional(),
       location: z.string(),
-      cuisine: z.string(),
+      cuisine: z.string().optional(),
       dateOfVisit: z.coerce.date(),
-      billAmount: z.number().nonnegative(),
-      peopleCount: z.number().int().positive(),
+      billAmount: z.number().nonnegative().optional(),
+      peopleCount: z.number().int().positive().optional(),
       rating: z.number().min(0).max(5),
       pinned: z.boolean().optional().default(false),
       gallery: z

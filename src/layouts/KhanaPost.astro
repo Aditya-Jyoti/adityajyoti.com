@@ -146,24 +146,36 @@ const formatBill = (n: number) =>
               <div class="meta-label">location</div>
               <div class="meta-value">{location}</div>
             </div>
-            <div>
-              <div class="meta-label">cuisine</div>
-              <div class="meta-value">{cuisine}</div>
-            </div>
+            {
+              cuisine && (
+                <div>
+                  <div class="meta-label">cuisine</div>
+                  <div class="meta-value">{cuisine}</div>
+                </div>
+              )
+            }
             <div>
               <div class="meta-label">date of visit</div>
               <div class="meta-value">
                 <FormattedDate date={dateOfVisit} />
               </div>
             </div>
-            <div>
-              <div class="meta-label">bill</div>
-              <div class="meta-value">{formatBill(billAmount)}</div>
-            </div>
-            <div>
-              <div class="meta-label">people</div>
-              <div class="meta-value">{peopleCount}</div>
-            </div>
+            {
+              billAmount != null && (
+                <div>
+                  <div class="meta-label">bill</div>
+                  <div class="meta-value">{formatBill(billAmount)}</div>
+                </div>
+              )
+            }
+            {
+              peopleCount != null && (
+                <div>
+                  <div class="meta-label">people</div>
+                  <div class="meta-value">{peopleCount}</div>
+                </div>
+              )
+            }
             <div>
               <div class="meta-label">rating</div>
               <div class="meta-value">{formatRating(rating)}/5</div>
@@ -239,20 +251,31 @@ const formatBill = (n: number) =>
                 <li>
                   <span class="opacity-70">where:</span> {location}
                 </li>
-                <li>
-                  <span class="opacity-70">cuisine:</span> {cuisine}
-                </li>
+                {
+                  cuisine && (
+                    <li>
+                      <span class="opacity-70">cuisine:</span> {cuisine}
+                    </li>
+                  )
+                }
                 <li>
                   <span class="opacity-70">visited:</span>{" "}
                   <FormattedDate date={dateOfVisit} />
                 </li>
-                <li>
-                  <span class="opacity-70">bill:</span> {formatBill(billAmount)}
-                  {" "}
-                  <span class="opacity-70">
-                    ({peopleCount} {peopleCount === 1 ? "person" : "people"})
-                  </span>
-                </li>
+                {
+                  billAmount != null && (
+                    <li>
+                      <span class="opacity-70">bill:</span>{" "}
+                      {formatBill(billAmount)}{" "}
+                      {peopleCount != null && (
+                        <span class="opacity-70">
+                          ({peopleCount}{" "}
+                          {peopleCount === 1 ? "person" : "people"})
+                        </span>
+                      )}
+                    </li>
+                  )
+                }
               </ul>
             </div>
 
@@ -352,6 +375,38 @@ const formatBill = (n: number) =>
         if (id && idToLink.has(id))
           idToLink.get(id)!.classList.add("is-active");
       };
+
+      // Permalink anchors on headings
+      const headings = document.querySelectorAll<HTMLHeadingElement>(
+        ".prose h1[id], .prose h2[id], .prose h3[id], .prose h4[id], .prose h5[id], .prose h6[id]"
+      );
+      headings.forEach((h) => {
+        const id = h.id;
+        if (!id) return;
+        const anchor = document.createElement("a");
+        anchor.href = `#${id}`;
+        anchor.className = "heading-anchor";
+        anchor.setAttribute("aria-label", `Link to "${h.textContent?.trim()}"`);
+        anchor.textContent = "#";
+        anchor.addEventListener("click", (e) => {
+          e.preventDefault();
+          const url = `${location.origin}${location.pathname}#${id}`;
+          history.replaceState(null, "", `#${id}`);
+          h.scrollIntoView({ behavior: "smooth" });
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(url).then(() => {
+              anchor.classList.add("copied");
+              const prev = anchor.textContent;
+              anchor.textContent = "copied!";
+              setTimeout(() => {
+                anchor.classList.remove("copied");
+                anchor.textContent = prev;
+              }, 1200);
+            });
+          }
+        });
+        h.appendChild(anchor);
+      });
 
       if (targets.length > 0 && "IntersectionObserver" in window) {
         const visible = new Set<string>();

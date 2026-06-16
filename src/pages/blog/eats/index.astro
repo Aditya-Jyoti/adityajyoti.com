@@ -91,7 +91,7 @@ const formatRating = (r: number) =>
                       </div>
                       <div class="flex flex-wrap gap-x-3 gap-y-1 text-sm opacity-80">
                         <span>{post.data.location}</span>
-                        <span>· {post.data.cuisine}</span>
+                        {post.data.cuisine && <span>· {post.data.cuisine}</span>}
                         <span>★ {formatRating(post.data.rating)}/5</span>
                       </div>
                       <div class="flex justify-between items-end pt-1 text-sm gap-2">
@@ -146,7 +146,7 @@ const formatRating = (r: number) =>
                 data-title={post.data.title.toLowerCase()}
                 data-description={post.data.description.toLowerCase()}
                 data-location={post.data.location.toLowerCase()}
-                data-cuisine={post.data.cuisine.toLowerCase()}
+                data-cuisine={(post.data.cuisine || "").toLowerCase()}
               >
                 <a
                   href={`/blog/eats/${post.id}/`}
@@ -183,7 +183,7 @@ const formatRating = (r: number) =>
                     </div>
                     <div class="flex flex-wrap gap-x-3 gap-y-1 text-sm opacity-80">
                       <span>{post.data.location}</span>
-                      <span>· {post.data.cuisine}</span>
+                      {post.data.cuisine && <span>· {post.data.cuisine}</span>}
                       <span>★ {formatRating(post.data.rating)}/5</span>
                     </div>
                     <div class="flex justify-between items-end pt-1 text-sm gap-2">

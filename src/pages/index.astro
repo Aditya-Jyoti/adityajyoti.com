@@ -316,7 +316,7 @@ const watchProgressLabel: Record<string, string> = {
                     title: string;
                     description: string;
                     location: string;
-                    cuisine: string;
+                    cuisine?: string;
                     dateOfVisit: Date;
                     rating: number;
                   };
@@ -341,7 +341,7 @@ const watchProgressLabel: Record<string, string> = {
                       </span>
                       <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs lg:text-sm opacity-80">
                         <span>{post.data.location}</span>
-                        <span>· {post.data.cuisine}</span>
+                        {post.data.cuisine && <span>· {post.data.cuisine}</span>}
                       </div>
                       <div class="w-full flex text-sm lg:text-base justify-between opacity-80">
                         <FormattedDate date={post.data.dateOfVisit} />

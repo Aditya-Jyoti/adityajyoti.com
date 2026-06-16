@@ -53,6 +53,33 @@ body {
   scroll-margin-top: 2rem;
 }
 
+/* Heading permalinks */
+.prose :is(h1, h2, h3, h4, h5, h6) .heading-anchor {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.4ch;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--fg-soft);
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.prose :is(h1, h2, h3, h4, h5, h6):hover .heading-anchor,
+.prose .heading-anchor:focus-visible {
+  opacity: 0.7;
+}
+
+.prose .heading-anchor:hover {
+  opacity: 1;
+  color: var(--fg);
+}
+
+.prose .heading-anchor.copied {
+  opacity: 1;
+  color: var(--fg);
+}
+
 .prose h2 {
   font-size: clamp(1.55rem, 3.5vw, 1.95rem);
   padding-bottom: 0.2rem;
