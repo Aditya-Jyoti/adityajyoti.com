@@ -21,9 +21,9 @@ const allEats = (await getCollection("khana")).sort(
   (a: any, b: any) =>
     b.data.dateOfVisit.valueOf() - a.data.dateOfVisit.valueOf()
 );
-const mostRecentPinned = allEats.find((p: any) => p.data.pinned);
-const mostRecent = allEats.find((p: any) => p.id !== mostRecentPinned?.id);
-const featuredEats = [mostRecentPinned, mostRecent].filter(Boolean);
+const pinnedEats = allEats.filter((p: any) => p.data.pinned);
+const unpinnedEats = allEats.filter((p: any) => !p.data.pinned);
+const featuredEats = [...pinnedEats, ...unpinnedEats].slice(0, 2);
 
 const allWatches = (await getCollection("watches")).sort(
   (a: any, b: any) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0)
@@ -325,7 +325,7 @@ const watchProgressLabel: Record<string, string> = {
                     href={`/blog/eats/${post.id}`}
                     seed={String(post.id)}
                     handdrawn={`handdrawn-${(String(post.id).length % 5) + 1}`}
-                    faceClass="min-h-[9rem] lg:h-40"
+                    faceClass="min-h-[10rem] lg:min-h-[11rem]"
                   >
                     <div class="flex flex-col gap-2 w-full h-full">
                       <div class="flex justify-between items-start gap-2">
@@ -389,7 +389,7 @@ const watchProgressLabel: Record<string, string> = {
                     href="/blog/watches"
                     seed={String(post.id)}
                     handdrawn={`handdrawn-${(String(post.id).length % 5) + 1}`}
-                    faceClass="min-h-[9rem] lg:h-40"
+                    faceClass="min-h-[10rem] lg:min-h-[11rem]"
                   >
                     <div class="flex flex-col gap-2 w-full h-full">
                       <div class="flex justify-between items-start gap-2">
