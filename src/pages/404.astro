@@ -1,0 +1,89 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BackgroundDoodles from "../components/BackgroundDoodles.astro";
+import Squiggle from "../components/Squiggle.astro";
+import "../styles/global.css";
+
+const destinations = [
+  {
+    href: "/blog/writes",
+    title: "Aditya Writes",
+    blurb: "long-form posts on programming, productivity and breaking things.",
+  },
+  {
+    href: "/blog/eats",
+    title: "Aditya Eats",
+    blurb: "everywhere I have eaten, rated and written up.",
+  },
+  {
+    href: "/blog/watches",
+    title: "Aditya Watches",
+    blurb: "anime, manga and whatever else I am working through.",
+  },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title="Page not found"
+      description="That page does not exist. Here are the places on this site that do."
+      noindex={true}
+    />
+  </head>
+
+  <body
+    class="bg-background text-foreground flex flex-col min-h-screen lg:w-[60%] p-4 lg:p-0 mx-auto font-handwriting relative overflow-x-clip"
+  >
+    <BackgroundDoodles />
+    <Header back="/" backLabel="home" />
+
+    <main class="flex-grow flex flex-col gap-8 pt-8 pb-6">
+      <section>
+        <p class="text-6xl lg:text-8xl font-black leading-none">404</p>
+        <h1 class="text-3xl lg:text-4xl font-bold mt-2">
+          this page does not exist
+        </h1>
+        <Squiggle class="w-48 mt-1" />
+        <p class="lg:text-xl text-lg mt-4 leading-relaxed">
+          Either I broke a link, or you typed something creative. Both are
+          entirely possible. Here is everything that definitely does exist:
+        </p>
+      </section>
+
+      <section class="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-6">
+        {
+          destinations.map((d, i) => (
+            <div class="relative">
+              <a
+                href={d.href}
+                class={`relative z-10 flex flex-col gap-2 p-5 h-full border-2 border-foreground bg-background hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-300 ease-in-out handdrawn-${(i % 5) + 1}`}
+              >
+                <span class="text-xl font-bold leading-tight">{d.title}</span>
+                <span class="text-sm lg:text-base flex-grow">{d.blurb}</span>
+                <span class="text-sm font-bold underline underline-offset-2">
+                  open →
+                </span>
+              </a>
+              <div
+                class={`absolute inset-0 border-2 border-foreground bg-foreground translate-x-1 translate-y-2 handdrawn-${((i + 3) % 5) + 1}`}
+              />
+            </div>
+          ))
+        }
+      </section>
+
+      <p class="lg:text-lg text-base">
+        or go back to the <a href="/" class="underline underline-offset-2"
+          >home page</a
+        >. If a link on this site sent you here, I would genuinely like to know:
+        <a href="/#contact" class="underline underline-offset-2">tell me</a>.
+      </p>
+    </main>
+
+    <Footer />
+  </body>
+</html>

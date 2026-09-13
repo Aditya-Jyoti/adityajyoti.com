@@ -39,7 +39,7 @@ const svgs = Array.from({ length: 10 }, (_, i) => `/bg-elements/bg${i + 1}.svg`)
 // container's height:100% + overflow-hidden.
 const PAGE_HEIGHT_PX = 7000;
 
-// Tight exclusion zone around the Aditya sketch on desktop — just the body
+// Tight exclusion zone around the Aditya sketch on desktop, just the body
 // silhouette itself. Doodles are allowed all around it.
 const portraitZone = { xMin: 56, xMax: 72, yMin: 30, yMax: 440 };
 
@@ -67,7 +67,7 @@ function attempt(opts: {
     const srcIdx = Math.floor(rand() * svgs.length);
     const src = svgs[srcIdx];
 
-    // Primary doodles live on the sides only — the center column belongs
+    // Primary doodles live on the sides only, the center column belongs
     // to the faint (centerWeighted) layer so text stays readable.
     let x: number;
     if (opts.centerWeighted) {

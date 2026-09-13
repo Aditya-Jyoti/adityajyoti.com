@@ -4,7 +4,7 @@ description: "How I managed to sync up my calendars and todos with my mobile pho
 pubDate: "Dec 29 2024"
 updatedDate: "Dec 30 2024"
 imgDesc: "My dashboard setup with calendar and todos"
-heroImage: "/blogs/post1-hero.png"
+heroImage: "./hero.png"
 ---
 
 I recently bought a [virtual private server](https://aws.amazon.com/what-is/vps/) (VPS) to experiment. Don't know what a virtual private server is? Don't worry I was in the same shoes just a while back. In simple terms a virtual private server is like having a computer but it's managed by someone else. They provide you with internet and power. The catch? You can only access the computer through shell commands like `ssh`.
@@ -117,7 +117,7 @@ That should be about it for the calendar section, once you get to actually self 
 
 <br/>
 
-![server](/blogs/post1-caldav.png)
+![Radicale CalDAV server running on the VPS, showing the synced calendar and todo collections](./caldav.png "the CalDAV server doing its thing")
 
 <br/>
 

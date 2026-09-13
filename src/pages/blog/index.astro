@@ -116,19 +116,40 @@ const sections = [
     href: "/blog/watches",
     title: "Aditya Watches",
     blurb:
-      "Anime, manga and other media I'm consuming, have finished, or want to get to — logged so I don't forget.",
+      "Anime, manga and other media I'm consuming, have finished, or want to get to, logged so I don't forget.",
     count: watches.length,
     noun: watches.length === 1 ? "title" : "titles",
     card: 5,
     shadow: 4,
   },
 ];
+const breadcrumbs = [{ name: "Home", href: "/" }];
+
+const listingSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: BLOG_TITLE,
+  description: BLOG_DESCRIPTION,
+  url: "https://adityajyoti.in/blog",
+  inLanguage: "en",
+  hasPart: sections.map((section) => ({
+    "@type": "Blog",
+    name: section.title,
+    description: section.blurb,
+    url: `https://adityajyoti.in${section.href}`,
+  })),
+};
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={BLOG_TITLE} description={BLOG_DESCRIPTION} />
+    <BaseHead
+      title={BLOG_TITLE}
+      description={BLOG_DESCRIPTION}
+      breadcrumbs={breadcrumbs}
+      schema={listingSchema}
+    />
   </head>
 
   <body

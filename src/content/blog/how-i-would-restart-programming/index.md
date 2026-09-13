@@ -4,7 +4,7 @@ description: "If I forgot everything and had to start from scratch, how would I 
 pubDate: "Jan 14 2025"
 updatedDate: "Jan 25, 2025"
 imgDesc: "My current github (original id github.com/SHR3KtheGR3AT)"
-heroImage: "/blogs/post2-hero.png"
+heroImage: "./hero.png"
 ---
 
 A lot of people ask me **how to start out with programming** and it got so repetitive that I stopped responding to such questions. How difficult can it be to start? Just do it. But one question stuck out to me...

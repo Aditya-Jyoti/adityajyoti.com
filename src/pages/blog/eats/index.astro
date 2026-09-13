@@ -6,6 +6,7 @@ import FormattedDate from "../../../components/FormattedDate.astro";
 import BackgroundDoodles from "../../../components/BackgroundDoodles.astro";
 import { type CollectionEntry, getCollection } from "astro:content";
 import { Image } from "astro:assets";
+import { handdrawnPair } from "../../../lib/handdrawn";
 import "../../../styles/global.css";
 
 const KHANA_TITLE = "Aditya Eats";
@@ -21,23 +22,46 @@ const all = (await getCollection("khana")).sort(
 
 const pinned = all.filter((p) => p.data.pinned);
 
-const pinnedStyles = pinned.map(() => ({
-  card: Math.floor(Math.random() * 5) + 1,
-  shadow: Math.floor(Math.random() * 5) + 1,
-}));
-const allStyles = all.map(() => ({
-  card: Math.floor(Math.random() * 5) + 1,
-  shadow: Math.floor(Math.random() * 5) + 1,
-}));
+// Seeded off the slug, so a place looks the same in the pinned strip and in
+// the full list below it.
+const pinnedStyles = pinned.map((p) => handdrawnPair(String(p.id)));
+const allStyles = all.map((p) => handdrawnPair(String(p.id)));
 
 const formatRating = (r: number) =>
   Number.isInteger(r) ? r.toFixed(0) : r.toFixed(1);
+
+const breadcrumbs = [
+  { name: "Home", href: "/" },
+  { name: "Blog", href: "/blog" },
+];
+
+// An ItemList of reviews, so search engines can see the ratings and places
+// behind this index page instead of a wall of cards.
+const listingSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: KHANA_TITLE,
+  description: KHANA_DESCRIPTION,
+  url: "https://adityajyoti.in/blog/eats",
+  numberOfItems: all.length,
+  itemListElement: all.map((post, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    url: `https://adityajyoti.in/blog/eats/${post.id}/`,
+    name: post.data.title,
+  })),
+};
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={KHANA_TITLE} description={KHANA_DESCRIPTION} />
+    <BaseHead
+      title={KHANA_TITLE}
+      description={KHANA_DESCRIPTION}
+      breadcrumbs={breadcrumbs}
+      schema={listingSchema}
+    />
   </head>
 
   <body
@@ -46,7 +70,7 @@ const formatRating = (r: number) =>
     <BackgroundDoodles />
     <Header back="/blog" backLabel="blogs" />
     <main class="flex-grow">
-      <div class="text-3xl font-bold pt-4">{KHANA_TITLE}</div>
+      <h1 class="text-3xl font-bold pt-4">{KHANA_TITLE}</h1>
       <div class="lg:text-xl text-lg p-4">{KHANA_DESCRIPTION}</div>
 
       {
@@ -204,7 +228,7 @@ const formatRating = (r: number) =>
         {
           all.length === 0 && (
             <div class="text-center text-lg lg:text-xl py-12 opacity-70">
-              no places logged yet — stay hungry :)
+              no places logged yet, stay hungry :)
             </div>
           )
         }

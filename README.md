@@ -1,68 +1,89 @@
-# Astro Starter Kit: Blog
+# adityajyoti.in
 
-```sh
-npm create astro@latest -- --template blog
+My personal site. Astro, Tailwind, no client framework, deployed static to
+Cloudflare Pages.
+
+It holds three blogs:
+
+- **Aditya Writes** (`/blog/writes`) long-form posts
+- **Aditya Eats** (`/blog/eats`) restaurant write-ups with ratings
+- **Aditya Watches** (`/blog/watches`) a list-only media log, no per-item pages
+
+## Commands
+
+| Command        | What it does                          |
+| :------------- | :------------------------------------ |
+| `pnpm dev`     | Dev server on `localhost:4321`        |
+| `pnpm build`   | Static build into `./dist/`           |
+| `pnpm preview` | Serve the build locally               |
+
+If you change anything under `src/plugins/`, run `rm -rf .astro` before
+building. The content layer caches rendered markdown and only invalidates it
+when `astro.config.mjs` or the content itself changes, so plugin edits are
+silently ignored until you clear it.
+
+## Layout
+
+```
+src/
+  components/     shared UI (Header, Footer, Lightbox, LatestTicker, ...)
+  content/        the three collections, see below
+  layouts/        BlogPost (writes) and KhanaPost (eats)
+  lib/            small build-time helpers
+  pages/          routes
+  plugins/        rehype-image-layout, the markdown image system
+  styles/         global.css (site chrome) and post.css (article body)
+public/           fonts, favicons, robots.txt, résumé. No post images.
+docs/             authoring notes
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/blog)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/blog)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/blog/devcontainer.json)
+## Adding a post
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Every post is a folder whose name is its URL slug, containing `index.md` and
+its own images. Nothing goes in `public/`.
 
-![blog](https://github.com/withastro/astro/assets/2244813/ff10799f-a816-4703-b967-c78997e8323d)
-
-Features:
-
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and OpenGraph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-├── public/
-├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+```
+src/content/blog/some-new-post/
+  index.md
+  hero.png
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Frontmatter is validated by `src/content.config.ts`; the build fails loudly if
+a field is missing or the wrong type. `heroImage` is a path relative to the
+markdown, so it runs through Astro's asset pipeline and gets WebP conversion,
+a `srcset` and intrinsic dimensions for free.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Eats posts additionally require `location`, `dateOfVisit` and `rating`, and can
+declare a `gallery` list that renders as a grid at the bottom of the page.
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+Watches entries are one flat markdown file each in `src/content/watches/`, with
+no body. See the README in that folder.
 
-Any static assets, like images, can be placed in the `public/` directory.
+## Images inside a post
 
-## 🧞 Commands
+There is a small layout system for images in the article body: floats that text
+wraps around, tiled rows, captions, height caps for very long screenshots, and
+a click-to-zoom viewer. It is driven entirely by markdown, no MDX.
 
-All commands are run from the root of the project, from a terminal:
+See [docs/images-in-posts.md](docs/images-in-posts.md).
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## Things worth knowing
 
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- **Fonts are self-hosted** in `public/fonts/`. Excalifont is the sketch face,
+  Roboto the readable one. Posts have a toggle between them, remembered in
+  `localStorage`.
+- **Page transitions** use the native CSS View Transitions API, not Astro's
+  client router, so every page stays a plain static document and per-page
+  inline scripts keep working.
+- **The contact form has no backend.** It builds a `mailto:` link and hands it
+  to the visitor's mail client.
+- **Card border shapes are seeded off the post slug** (`src/lib/handdrawn.ts`),
+  so they stay stable across builds instead of reshuffling on every deploy.
+- **Sitemap `lastmod`** comes from real frontmatter dates, read at build time by
+  `src/lib/content-dates.mjs`.
 
 ## Credit
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+Originally based on the Astro blog starter, which in turn borrowed from
+[Bear Blog](https://github.com/HermanMartinus/bearblog/). Very little of either
+is left.

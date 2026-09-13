@@ -1,11 +1,13 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import type { MarkdownHeading } from "astro";
+import { Image, getImage } from "astro:assets";
 import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import Squiggle from "../components/Squiggle.astro";
+import Lightbox from "../components/Lightbox.astro";
 
 import "../styles/global.css";
 import "../styles/post.css";
@@ -24,11 +26,19 @@ const {
   headings = [],
 } = Astro.props;
 
-const heroWebp = heroImage
-  ? heroImage.replace(/\.(png|jpe?g)$/i, ".webp")
+// Run through the asset pipeline so the hero gets real dimensions and a
+// responsive srcset instead of shipping the full-size PNG to every phone.
+const heroProcessed = heroImage
+  ? await getImage({ src: heroImage, format: "webp", width: 1200 })
   : undefined;
 
 const tocItems = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
+
+const breadcrumbs = [
+  { name: "Home", href: "/" },
+  { name: "Blog", href: "/blog" },
+  { name: "Aditya Writes", href: "/blog/writes" },
+];
 ---
 
 <html lang="en">
@@ -36,12 +46,13 @@ const tocItems = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
     <BaseHead
       title={title}
       description={description}
-      image={heroImage}
+      image={heroProcessed?.src}
       type="article"
       pubDate={pubDate}
       updatedDate={updatedDate}
-      preloadImage={heroImage}
-      preloadImageWebp={heroWebp}
+      preloadImageWebp={heroProcessed?.src}
+      imageAlt={imgDesc || title}
+      breadcrumbs={breadcrumbs}
     />
     <script is:inline>
       try {
@@ -101,19 +112,18 @@ const tocItems = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
           {
             heroImage && (
               <figure class="my-6">
-                <picture>
-                  {heroWebp && <source srcset={heroWebp} type="image/webp" />}
-                  <img
-                    src={heroImage}
-                    alt={imgDesc || title}
-                    width="1200"
-                    height="630"
-                    loading="eager"
-                    decoding="async"
-                    fetchpriority="high"
-                    class="w-full h-auto rounded-xl border border-foreground/15"
-                  />
-                </picture>
+                <Image
+                  src={heroImage}
+                  alt={imgDesc || title}
+                  width={1200}
+                  widths={[480, 800, 1200]}
+                  sizes="(min-width: 1024px) 840px, 100vw"
+                  loading="eager"
+                  decoding="async"
+                  fetchpriority="high"
+                  format="webp"
+                  class="w-full h-auto rounded-xl border border-foreground/15"
+                />
                 {imgDesc && (
                   <figcaption class="text-center text-sm lg:text-base mt-2 italic opacity-70">
                     {imgDesc}
@@ -171,6 +181,7 @@ const tocItems = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
       </div>
     </main>
     <Footer />
+    <Lightbox />
 
     <script>
       const html = document.documentElement;

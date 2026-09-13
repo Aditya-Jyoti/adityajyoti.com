@@ -46,12 +46,36 @@ const mediaOptions = [...new Set(all.map((i) => i.data.mediaType))].sort();
 
 const formatRating = (r: number) =>
   Number.isInteger(r) ? r.toFixed(0) : r.toFixed(1);
+
+const breadcrumbs = [
+  { name: "Home", href: "/" },
+  { name: "Blog", href: "/blog" },
+];
+
+const listingSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: WATCHES_TITLE,
+  description: WATCHES_DESCRIPTION,
+  url: "https://adityajyoti.in/blog/watches",
+  numberOfItems: all.length,
+  itemListElement: all.map((post, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    name: post.data.title,
+  })),
+};
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={WATCHES_TITLE} description={WATCHES_DESCRIPTION} />
+    <BaseHead
+      title={WATCHES_TITLE}
+      description={WATCHES_DESCRIPTION}
+      breadcrumbs={breadcrumbs}
+      schema={listingSchema}
+    />
     <script is:inline>
       try {
         if (localStorage.getItem("blog-font") === "sketch") {
@@ -76,7 +100,7 @@ const formatRating = (r: number) =>
     <BackgroundDoodles />
     <Header back="/blog" backLabel="blogs" />
     <main class="flex-grow">
-      <div class="text-3xl font-bold pt-4">{WATCHES_TITLE}</div>
+      <h1 class="text-3xl font-bold pt-4">{WATCHES_TITLE}</h1>
       <div class="lg:text-lg text-base p-4 pt-2">{WATCHES_DESCRIPTION}</div>
 
       <!-- filter bar -->
@@ -250,7 +274,7 @@ const formatRating = (r: number) =>
       {
         all.length === 0 && (
           <div class="text-center text-lg lg:text-xl py-12 opacity-70">
-            nothing logged yet — the watchlist is empty :)
+            nothing logged yet, the watchlist is empty :)
           </div>
         )
       }

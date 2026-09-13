@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 
+# Redirect shim for the résumé download, nothing to index.
+Disallow: /resume
+
 Sitemap: https://adityajyoti.in/sitemap-index.xml

@@ -7,6 +7,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import Squiggle from "../components/Squiggle.astro";
+import Lightbox from "../components/Lightbox.astro";
 
 import "../styles/global.css";
 import "../styles/post.css";
@@ -48,6 +49,45 @@ const formatBill = (n: number) =>
     maximumFractionDigits: 0,
   }).format(n);
 
+const breadcrumbs = [
+  { name: "Home", href: "/" },
+  { name: "Blog", href: "/blog" },
+  { name: "Aditya Eats", href: "/blog/eats" },
+];
+
+// A food post *is* a review, so say so. This is what makes star ratings and
+// the restaurant name eligible to show up in search results.
+const reviewSchema = {
+  "@context": "https://schema.org",
+  "@type": "Review",
+  name: title,
+  reviewBody: description,
+  datePublished: pubDate.toISOString(),
+  author: {
+    "@type": "Person",
+    name: "Aditya Jyoti",
+    url: "https://adityajyoti.in",
+  },
+  reviewRating: {
+    "@type": "Rating",
+    ratingValue: rating,
+    bestRating: 5,
+    worstRating: 0,
+  },
+  itemReviewed: {
+    "@type": "Restaurant",
+    name: title,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: location,
+    },
+    ...(cuisine ? { servesCuisine: cuisine } : {}),
+    ...(heroProcessed?.src
+      ? { image: new URL(heroProcessed.src, Astro.site).toString() }
+      : {}),
+  },
+};
+
 ---
 
 <html lang="en">
@@ -60,6 +100,9 @@ const formatBill = (n: number) =>
       pubDate={pubDate}
       updatedDate={updatedDate}
       preloadImageWebp={heroProcessed?.src}
+      imageAlt={imgDesc || title}
+      breadcrumbs={breadcrumbs}
+      schema={reviewSchema}
     />
     <script is:inline>
       try {
@@ -123,6 +166,8 @@ const formatBill = (n: number) =>
                   src={heroImage}
                   alt={imgDesc || title}
                   width={1200}
+                  widths={[480, 800, 1200]}
+                  sizes="(min-width: 1024px) 840px, 100vw"
                   loading="eager"
                   decoding="async"
                   fetchpriority="high"
@@ -204,6 +249,8 @@ const formatBill = (n: number) =>
                         <Image
                           src={img.src}
                           alt={img.alt || `Photo ${i + 1}`}
+                          widths={[300, 600]}
+                          sizes="(min-width: 480px) 300px, 45vw"
                           loading="lazy"
                           decoding="async"
                           format="webp"
@@ -303,6 +350,7 @@ const formatBill = (n: number) =>
       </div>
     </main>
     <Footer />
+    <Lightbox />
 
     <script>
       const html = document.documentElement;

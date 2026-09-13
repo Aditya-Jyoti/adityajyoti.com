@@ -4,7 +4,7 @@ description: "Story of how I massively blew out an opportunity because I wanted 
 pubDate: "July 22 2025"
 updatedDate: "July 22 2025"
 imgDesc: "How a good architecture can still fall apart"
-heroImage: "/blogs/post3-hero.png"
+heroImage: "./hero.png"
 ---
 
 You know the feeling where you _think_ you know enough, leading you to take risks which may or may not pay off. Well that happened to me...and it did not go well.
@@ -27,7 +27,7 @@ Quite easy, right? I was even given a month's time. Well that's where the downfa
 
 ## The rabbit hole
 
-![architecture](/blogs/post3-architecture.png)
+![Microservice architecture diagram with separate services, message queues and staging and production environments](./architecture.png "the architecture I was so proud of")
 
 What you see above was my _proposed_ architecture for this startup's backend. Keep in mind, they were just an **Ecommerce Platform** in the early stages of their release, barely making any revenue.
 
@@ -101,7 +101,7 @@ My final message to them?
 
 ## What I learnt
 
-![linkedin_post](/blogs/post3-linkedin_post.png)
+![LinkedIn post arguing that a startup under $300K ARR running five microservices is burning runway on complexity {right}](./linkedin-post.png "click to read the whole thing")
 
 I saw this linkedin post a few months after all of this happened, which led me to writing this post now.
 

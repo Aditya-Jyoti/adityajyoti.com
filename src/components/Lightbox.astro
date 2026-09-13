@@ -1,0 +1,68 @@
+---
+/**
+ * Click-to-zoom for images inside a post body.
+ *
+ * Prose images are height-capped so a tall screenshot can't shove the rest of
+ * the article off-screen, so this is the escape hatch that lets a reader see the
+ * whole thing. The overlay scrolls, so a very long image is readable at full
+ * width rather than shrunk to fit.
+ */
+---
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button type="button" class="lightbox-close" aria-label="Close image viewer">×</button>
+  <figure class="lightbox-figure">
+    <img class="lightbox-img" src="" alt="" />
+    <figcaption class="lightbox-caption"></figcaption>
+  </figure>
+</div>
+
+<script>
+  const overlay = document.getElementById("lightbox");
+  if (overlay) {
+    const img = overlay.querySelector<HTMLImageElement>(".lightbox-img")!;
+    const caption = overlay.querySelector<HTMLElement>(".lightbox-caption")!;
+    const closeBtn = overlay.querySelector<HTMLButtonElement>(".lightbox-close")!;
+    let lastFocused: HTMLElement | null = null;
+
+    const close = () => {
+      overlay.removeAttribute("data-visible");
+      window.setTimeout(() => {
+        overlay.removeAttribute("data-open");
+        img.src = "";
+      }, 180);
+      document.body.style.overflow = "";
+      lastFocused?.focus();
+    };
+
+    const open = (source: HTMLImageElement, text: string) => {
+      lastFocused = document.activeElement as HTMLElement | null;
+      // currentSrc picks whatever the browser actually chose from srcset.
+      img.src = source.currentSrc || source.src;
+      img.alt = source.alt || "";
+      caption.textContent = text;
+      caption.hidden = text === "";
+      overlay.setAttribute("data-open", "");
+      document.body.style.overflow = "hidden";
+      requestAnimationFrame(() => overlay.setAttribute("data-visible", ""));
+      closeBtn.focus();
+    };
+
+    document.querySelectorAll<HTMLImageElement>(".prose img").forEach((el) => {
+      // Gallery images already link out to the full-size file.
+      if (el.closest("a")) return;
+      el.addEventListener("click", () => {
+        const figcaption = el.closest("figure")?.querySelector("figcaption");
+        open(el, figcaption?.textContent?.trim() || "");
+      });
+    });
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target !== img) close();
+    });
+    closeBtn.addEventListener("click", close);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && overlay.hasAttribute("data-open")) close();
+    });
+  }
+</script>

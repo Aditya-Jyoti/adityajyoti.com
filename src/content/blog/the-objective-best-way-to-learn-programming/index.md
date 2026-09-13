@@ -4,7 +4,7 @@ description: "A look into project based learning, along with just harsh reality 
 pubDate: "July 22 2025"
 updatedDate: "July 22 2025"
 imgDesc: "My very first github profile"
-heroImage: "/blogs/post4-hero.png"
+heroImage: "./hero.png"
 ---
 
 I get asked a lot _"How do I start programming?"_ and more often than not, the question is just funny to me. How am I, a guy who is more or less your age, who is also figuring his shit out supposed to guide you into learning something that he himself hasn't fully mastered?

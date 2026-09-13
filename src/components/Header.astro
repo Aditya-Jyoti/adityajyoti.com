@@ -1,5 +1,6 @@
 ---
 import Squiggle from "./Squiggle.astro";
+import LatestTicker from "./LatestTicker.astro";
 
 interface Props {
   /** Mobile-only back link target. Omit on the home page. */
@@ -26,7 +27,28 @@ const blogLinks = [
     desc: "anime, manga & other media I'm consuming, have finished, or want to get to.",
   },
 ];
+
+// Mobile gets the full set as cards. The desktop bar can lean on hover
+// tooltips for the descriptions; a phone can't, so they're always visible.
+const mobileLinks = [
+  { label: "Blog", href: "/blog", desc: "all three blogs, in one place." },
+  ...blogLinks,
+  { label: "Contact", href: "/#contact", desc: "say hi, or tell me I'm wrong." },
+];
+
+// Wobbly hamburger and close icons, drawn to match the hand-sketched borders.
+const burgerPaths = [
+  "M 3 7 C 8 6, 14 8, 21 6.8",
+  "M 3 12 C 9 13, 15 11, 21 12.2",
+  "M 3 17 C 7 16.2, 15 18, 21 17",
+];
+const closePaths = [
+  "M 5 5 C 10.5 9.6, 14 14.5, 19 19",
+  "M 19 5 C 14 9.6, 10.5 14.5, 5 19",
+];
 ---
+
+<LatestTicker />
 
 <div class="hidden lg:block">
   <nav class="flex justify-between items-center p-4 text-lg">
@@ -63,16 +85,234 @@ const blogLinks = [
   <Squiggle class="w-full" />
 </div>
 
-{
-  back && (
-    <div class="lg:hidden pt-2 pb-1">
-      <a
-        href={back}
-        class="inline-flex items-center gap-1.5 text-base font-bold border-2 border-foreground bg-background text-foreground px-3 py-1 handdrawn-2 active:translate-x-0.5 active:translate-y-0.5 transition-all duration-200"
+<div class="lg:hidden">
+  <div class="flex items-center justify-between gap-3 pt-2 pb-1">
+    {
+      back ? (
+        <a
+          href={back}
+          class="inline-flex items-center gap-1.5 text-base font-bold border-2 border-foreground bg-background text-foreground px-3 py-1 handdrawn-2 active:translate-x-0.5 active:translate-y-0.5 transition-all duration-200"
+        >
+          <span aria-hidden="true">←</span>
+          <span>{backLabel}</span>
+        </a>
+      ) : (
+        <a href="/" class="text-xl font-bold text-foreground">
+          Aditya Jyoti
+        </a>
+      )
+    }
+
+    <button
+      id="nav-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+      class="inline-flex items-center gap-2 text-base font-bold border-2 border-foreground bg-background text-foreground px-3 py-1 handdrawn-4 active:translate-x-0.5 active:translate-y-0.5 transition-all duration-200"
+    >
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
       >
-        <span aria-hidden="true">←</span>
-        <span>{backLabel}</span>
-      </a>
+        {burgerPaths.map((d) => <path d={d} />)}
+      </svg>
+      <span>menu</span>
+    </button>
+  </div>
+
+  <Squiggle class="w-full" />
+
+  {/* A full-screen sheet, so the menu reads as its own page rather than a
+      dropdown sitting awkwardly on top of the article behind it. */}
+  <nav
+    id="mobile-nav"
+    class="mobile-nav bg-background text-foreground"
+    aria-label="Site navigation"
+  >
+    <div class="flex items-center justify-between gap-3 pt-2 pb-1 shrink-0">
+      <a href="/" class="text-xl font-bold text-foreground">Aditya Jyoti</a>
+      <button
+        id="nav-close"
+        type="button"
+        class="inline-flex items-center gap-2 text-base font-bold border-2 border-foreground bg-background text-foreground px-3 py-1 handdrawn-4 active:translate-x-0.5 active:translate-y-0.5 transition-all duration-200"
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          {closePaths.map((d) => <path d={d} />)}
+        </svg>
+        <span>close</span>
+      </button>
     </div>
-  )
-}
+
+    <Squiggle class="w-full shrink-0" />
+
+    <ul class="nav-list">
+      {
+        mobileLinks.map((link, i) => (
+          <li class="nav-item relative" style={`--i:${i}`}>
+            <a
+              href={link.href}
+              class={`relative z-10 flex flex-col items-center gap-1 text-center px-4 py-4 border-2 border-foreground bg-background text-foreground active:translate-x-0.5 active:translate-y-0.5 transition-transform duration-200 handdrawn-${(i % 5) + 1}`}
+            >
+              <span class="text-xl font-bold leading-tight">{link.label}</span>
+              <span class="text-sm opacity-75 leading-snug">{link.desc}</span>
+            </a>
+            <div
+              class={`absolute inset-0 border-2 border-foreground bg-foreground translate-x-1 translate-y-1 handdrawn-${((i + 2) % 5) + 1}`}
+            />
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</div>
+
+<style>
+  .mobile-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100dvh;
+    z-index: 60;
+    display: none;
+    flex-direction: column;
+    padding: 0 1rem 1.25rem;
+    overflow-y: auto;
+    /* A visible scrollbar here would eat into the right inset and make the
+       sheet's edges disagree with the page header behind it. */
+    scrollbar-width: none;
+    opacity: 0;
+    transform: scale(0.985);
+    transition: opacity 180ms ease-out, transform 220ms ease-out;
+  }
+
+  .mobile-nav[data-open] {
+    display: flex;
+  }
+
+  .mobile-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-nav[data-visible] {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Sit the cards together as one group in the middle of whatever height is
+     left. `margin-block: auto` centres them without stretching, and unlike
+     `justify-content: center` it degrades safely when the list is taller than
+     the screen: the auto margins collapse and it just scrolls. */
+  .nav-list {
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.05rem;
+    width: 100%;
+    max-width: 26rem;
+    margin-block: auto;
+    margin-inline: auto;
+    padding-block: 1.25rem;
+  }
+
+  /* Cards drop in one after another on the way open. No stagger on the way
+     out, otherwise closing feels sluggish. */
+  .nav-item {
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 200ms ease-out, transform 200ms ease-out;
+  }
+
+  .mobile-nav[data-visible] .nav-item {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: calc(var(--i) * 45ms);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-nav,
+    .nav-item {
+      transition: none;
+    }
+
+    .nav-item {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById("nav-toggle");
+  const panel = document.getElementById("mobile-nav");
+  const closeBtn = document.getElementById("nav-close");
+
+  if (toggle && panel && closeBtn) {
+    let closeTimer = 0;
+
+    // Line the sheet's edges up with the header bar it covers. Listing pages
+    // pad the body on all sides, post pages only horizontally, so read it off
+    // the body instead of hardcoding a value that is wrong half the time.
+    const syncInset = () => {
+      const body = getComputedStyle(document.body);
+      panel.style.paddingTop = body.paddingTop;
+      panel.style.paddingLeft = body.paddingLeft;
+      panel.style.paddingRight = body.paddingRight;
+    };
+    syncInset();
+
+    const isOpen = () => toggle.getAttribute("aria-expanded") === "true";
+
+    const setOpen = (open: boolean) => {
+      window.clearTimeout(closeTimer);
+      toggle.setAttribute("aria-expanded", String(open));
+
+      if (open) {
+        syncInset();
+        panel.setAttribute("data-open", "");
+        // One frame between display:flex and the visible state, so the
+        // transition has something to animate from.
+        requestAnimationFrame(() => panel.setAttribute("data-visible", ""));
+        document.body.style.overflow = "hidden";
+        closeBtn.focus();
+      } else {
+        panel.removeAttribute("data-visible");
+        closeTimer = window.setTimeout(
+          () => panel.removeAttribute("data-open"),
+          240
+        );
+        document.body.style.overflow = "";
+        toggle.focus();
+      }
+    };
+
+    toggle.addEventListener("click", () => setOpen(true));
+    closeBtn.addEventListener("click", () => setOpen(false));
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && isOpen()) setOpen(false);
+    });
+
+    // Rotating to a desktop width hides the sheet via CSS but would otherwise
+    // leave the body scroll-locked.
+    window.addEventListener("resize", () => {
+      syncInset();
+      if (isOpen() && window.innerWidth >= 1024) setOpen(false);
+    });
+  }
+</script>

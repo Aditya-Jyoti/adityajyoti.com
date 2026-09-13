@@ -7,7 +7,7 @@
   --fg-muted: rgba(29, 32, 33, 0.55);
   --fg-faint: rgba(29, 32, 33, 0.12);
   --fg-tint: rgba(29, 32, 33, 0.06);
-  --link: #79740e;
+  --link: #6a660c;
   --link-hover: #af3a03;
   --accent: #d3869b;
 }
@@ -136,7 +136,7 @@ body {
   color: var(--link-hover);
 }
 
-/* Lists — the core fix: actual markers */
+/* Lists: the core fix, actual markers */
 .prose ul,
 .prose ol {
   margin: 1em 0 1.25em;
@@ -225,14 +225,38 @@ body {
   font-family: ui-monospace, "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
 }
 
-/* Images & figures */
+/* ---------- Images & figures ----------
+
+   Layouts come from a `{...}` marker in the alt text, turned into figure
+   classes by src/plugins/rehype-image-layout.mjs:
+
+     (none)   centred, natural size, height-capped so tall shots behave
+     {wide}   forced to the full column width
+     {small}  55% of the column, centred
+     {left}   floated left, text wraps around it
+     {right}  floated right
+     {tall}   a harder height cap for very long screenshots
+     {plain}  no border / no rounding
+
+   Two or more images in one markdown paragraph become an .img-tile grid.
+*/
+
+/* Height caps keep a portrait screenshot from eating a whole viewport.
+   width/height both auto lets the browser honour max-width AND max-height
+   while preserving the aspect ratio (CSS replaced-element sizing). */
 .prose img {
   display: block;
-  max-width: 100%;
+  width: auto;
   height: auto;
+  max-width: 100%;
+  max-height: 72vh;
   margin: 1.5em auto;
   border-radius: 10px;
   border: 1px solid var(--fg-faint);
+}
+
+.prose picture {
+  display: contents;
 }
 
 .prose figure {
@@ -240,7 +264,7 @@ body {
 }
 
 .prose figure img {
-  margin-bottom: 0.5em;
+  margin: 0 auto;
 }
 
 .prose figcaption {
@@ -248,9 +272,115 @@ body {
   font-size: 0.95rem;
   color: var(--fg-soft);
   font-style: italic;
+  margin-top: 0.5em;
 }
 
-/* Horizontal rule — suppressed; headings already separate sections */
+/* Clicking any prose image opens the lightbox (see Lightbox.astro). */
+.prose figure img,
+.prose p > img {
+  cursor: zoom-in;
+}
+
+/* --- Full column width --- */
+.prose .fig-wide img {
+  width: 100%;
+  max-height: none;
+}
+
+/* --- Deliberately small --- */
+.prose .fig-small img {
+  max-width: min(55%, 420px);
+}
+
+/* --- Very tall images: cap harder, and hint that there's more to see --- */
+.prose .fig-tall img {
+  max-height: 60vh;
+}
+
+/* --- No frame --- */
+.prose .fig-plain img {
+  border: 0;
+  border-radius: 0;
+}
+
+/* --- Floats: text wraps around the image --- */
+.prose .fig-left,
+.prose .fig-right {
+  max-width: 42%;
+  margin-top: 0.4em;
+  margin-bottom: 0.9em;
+}
+
+.prose .fig-left {
+  float: left;
+  margin-right: 1.5rem;
+  margin-left: 0;
+}
+
+.prose .fig-right {
+  float: right;
+  margin-left: 1.5rem;
+  margin-right: 0;
+}
+
+.prose .fig-left img,
+.prose .fig-right img {
+  width: 100%;
+  max-height: 60vh;
+}
+
+/* A float must never run into the next section's heading rule, and the
+   article must never end mid-float. */
+.prose :is(h1, h2, h3, h4, h5, h6),
+.prose pre,
+.prose table,
+.prose blockquote,
+.prose .img-tile {
+  clear: both;
+}
+
+.prose::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+/* --- Tiled rows --- */
+.img-tile {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.5em 0;
+  align-items: start;
+}
+
+.img-tile-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.img-tile-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.prose .img-tile .tile-figure {
+  margin: 0;
+  min-width: 0;
+}
+
+/* Tiles share a common height so the row reads as one strip. */
+.prose .img-tile .tile-figure img {
+  width: 100%;
+  height: clamp(140px, 26vw, 300px);
+  max-height: none;
+  object-fit: cover;
+  margin: 0;
+}
+
+.prose .img-tile figcaption {
+  font-size: 0.85rem;
+  margin-top: 0.35em;
+}
+
+/* Horizontal rule: suppressed, headings already separate sections */
 .prose hr {
   display: none;
 }
@@ -292,6 +422,42 @@ body {
 
   .prose pre {
     padding: 0.85rem;
+  }
+
+  /* Wrapping text around a 42% image is unreadable on a phone, so floats
+     become plain centred blocks instead. Tiles stay tiled, just smaller. */
+  .prose .fig-left,
+  .prose .fig-right {
+    float: none;
+    max-width: 100%;
+    margin: 1.5em auto;
+  }
+
+  .prose .fig-left img,
+  .prose .fig-right img {
+    width: auto;
+  }
+
+  .prose .fig-small img {
+    max-width: 75%;
+  }
+
+  .prose img {
+    max-height: 65vh;
+  }
+
+  /* Three-up rows get cramped below ~720px; drop to two columns and let
+     the third image span the row. */
+  .img-tile-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .img-tile-3 > .tile-figure:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .img-tile-3 > .tile-figure:last-child:nth-child(odd) img {
+    height: clamp(160px, 40vw, 260px);
   }
 }
 
@@ -427,13 +593,6 @@ html.font-sketch body.font-blog .prose {
   }
 }
 
-/* Don't let prose rules override gallery image styling */
-.prose .gallery-img {
-  margin: 0;
-  border: 0;
-  border-radius: 0;
-}
-
 /* Screen reader only */
 .sr-only {
   border: 0;
@@ -447,4 +606,83 @@ html.font-sketch body.font-blog .prose {
   clip: rect(1px, 1px, 1px, 1px);
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* ---------- Image lightbox ---------- */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(29, 32, 33, 0.92);
+  cursor: zoom-out;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.lightbox[data-open] {
+  display: flex;
+}
+
+.lightbox[data-visible] {
+  opacity: 1;
+}
+
+.lightbox-figure {
+  margin: 0;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  /* The image itself can be scrolled when it's taller than the viewport,
+     which is the whole point for very long screenshots. */
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.lightbox-img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  background: var(--bg);
+  cursor: default;
+}
+
+.lightbox-caption {
+  color: #fbf1c7;
+  font-size: 0.9rem;
+  font-style: italic;
+  text-align: center;
+  max-width: 60ch;
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 0.75rem;
+  right: 0.9rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  line-height: 1;
+  font-weight: 700;
+  color: #1d2021;
+  background: #fbf1c7;
+  border: 2px solid #1d2021;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox {
+    transition: none;
+  }
 }

@@ -1,0 +1,235 @@
+---
+/**
+ * A thin line of plain text above the nav, scrolling the most recent things
+ * published across Aditya Writes and Aditya Eats. Watches are deliberately
+ * excluded, since they're a log rather than a publication.
+ *
+ * The newest item leads and is labelled; the rest follow so the line always
+ * reads as a full ticker rather than one lonely headline.
+ *
+ * Desktop only. On a phone the nav is already collapsed to a back link and a
+ * scrolling strip there is just noise above the content.
+ */
+import { getCollection } from "astro:content";
+
+const MAX_ITEMS = 6;
+
+const writes = await getCollection("blog");
+const eats = await getCollection("khana");
+
+const items = [
+  ...writes.map((p: any) => ({
+    kicker: "writes",
+    title: p.data.title as string,
+    href: `/blog/writes/${p.id}/`,
+    date: p.data.pubDate as Date,
+  })),
+  ...eats.map((p: any) => ({
+    kicker: "eats",
+    title: p.data.title as string,
+    href: `/blog/eats/${p.id}/`,
+    date: p.data.pubDate as Date,
+  })),
+]
+  .sort((a, b) => b.date.valueOf() - a.date.valueOf())
+  .slice(0, MAX_ITEMS)
+  .map((item) => ({
+    ...item,
+    when: item.date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }),
+  }));
+
+const latest = items[0];
+
+// The track holds two identical copies and slides by exactly half its width,
+// so the loop is seamless without any JS.
+const copies = [0, 1];
+---
+
+{
+  latest && (
+    <div class="ticker">
+      <span class="ticker-tag" aria-hidden="true">
+        latest
+      </span>
+      <div class="ticker-window">
+        <div class="ticker-track">
+          {copies.map((copy) => (
+            <div class="ticker-copy" aria-hidden={copy === 1 ? "true" : undefined}>
+              {items.map((item, i) => (
+                <>
+                  <a
+                    class="ticker-item"
+                    href={item.href}
+                    tabindex={copy === 1 ? -1 : undefined}
+                  >
+                    <span class="ticker-kicker">{item.kicker}</span>
+                    <span class="ticker-sep">/</span>
+                    <span class="ticker-title">{item.title}</span>
+                    <span class="ticker-date">{item.when}</span>
+                    {copy === 0 && i === 0 && (
+                      <span class="ticker-new">new</span>
+                    )}
+                  </a>
+                  <span class="ticker-dot" aria-hidden="true">
+                    ◆
+                  </span>
+                </>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .ticker {
+    display: none;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 1.1rem 0 0.4rem;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    overflow: hidden;
+  }
+
+  @media (min-width: 1024px) {
+    .ticker {
+      display: flex;
+    }
+  }
+
+  .ticker-tag {
+    flex-shrink: 0;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.55;
+  }
+
+  .ticker-window {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    /* Fade the text out at the edges instead of chopping it. */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 1rem,
+      #000 calc(100% - 1rem),
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 1rem,
+      #000 calc(100% - 1rem),
+      transparent
+    );
+  }
+
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    animation: ticker-scroll 45s linear infinite;
+  }
+
+  .ticker:hover .ticker-track,
+  .ticker-track:focus-within {
+    animation-play-state: paused;
+  }
+
+  .ticker-copy {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .ticker-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    white-space: nowrap;
+    color: inherit;
+    text-decoration: none;
+    opacity: 0.75;
+    transition: opacity 0.15s ease;
+  }
+
+  .ticker-item:hover,
+  .ticker-item:focus-visible {
+    opacity: 1;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .ticker-kicker {
+    font-weight: 700;
+  }
+
+  .ticker-title {
+    font-weight: 700;
+  }
+
+  .ticker-sep,
+  .ticker-date {
+    opacity: 0.6;
+  }
+
+  .ticker-new {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.65rem;
+    border-bottom: 2px solid currentColor;
+  }
+
+  .ticker-dot {
+    padding: 0 0.85rem;
+    opacity: 0.35;
+    font-size: 0.5rem;
+  }
+
+  @keyframes ticker-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* No motion: show just the newest headline, truncated if it doesn't fit. */
+  @media (prefers-reduced-motion: reduce) {
+    .ticker-track {
+      animation: none;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .ticker-copy:last-child {
+      display: none;
+    }
+
+    .ticker-copy {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .ticker-copy > :nth-child(n + 2) {
+      display: none;
+    }
+
+    .ticker-item {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+</style>

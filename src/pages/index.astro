@@ -445,15 +445,21 @@ const watchProgressLabel: Record<string, string> = {
           <a href="mailto:website@adityajyoti.in"
             ><strong>website@adityajyoti.in</strong></a
           >
-          and I will respond promptly, or you can leave a message here.
+          or write it here and I'll hand it to your mail app, already filled in.
+          <button
+            type="button"
+            id="copy-email"
+            class="text-base font-bold underline underline-offset-2"
+            data-email="website@adityajyoti.in">copy the address</button
+          >
         </div>
 
-        <!-- Formspree form starts here -->
-        <form
-          action="https://formspree.io/f/xeozewvd"
-          method="POST"
-          class="flex flex-col gap-4 relative"
-        >
+        <!--
+          No backend, no form service. Submitting builds a mailto: link and
+          opens whatever the visitor already uses for email, so the message
+          lands in a real inbox instead of a third party's dashboard.
+        -->
+        <form id="contact-form" class="flex flex-col gap-4 relative">
           <div class="flex gap-4">
             <!-- name -->
             <div class="relative w-full">
@@ -470,6 +476,8 @@ const watchProgressLabel: Record<string, string> = {
                   type="text"
                   placeholder="Name"
                   readonly
+                  tabindex="-1"
+                  aria-hidden="true"
                   class="p-2 border-2 w-full border-foreground bg-foreground translate-x-1 translate-y-1 handdrawn-3 text-foreground placeholder-foreground"
                 />
               </div>
@@ -490,6 +498,8 @@ const watchProgressLabel: Record<string, string> = {
                   type="email"
                   placeholder="Email"
                   readonly
+                  tabindex="-1"
+                  aria-hidden="true"
                   class="p-2 border-2 w-full border-foreground bg-foreground translate-x-1 translate-y-1 handdrawn-3 text-foreground placeholder-foreground"
                 />
               </div>
@@ -511,6 +521,8 @@ const watchProgressLabel: Record<string, string> = {
                 placeholder="Message"
                 rows="4"
                 readonly
+                tabindex="-1"
+                aria-hidden="true"
                 class="p-2 border-2 w-full border-foreground resize-none bg-foreground translate-x-1 translate-y-1 handdrawn-3 text-foreground placeholder-foreground"
               ></textarea>
             </div>
@@ -520,12 +532,63 @@ const watchProgressLabel: Record<string, string> = {
             type="submit"
             class="p-2 bg-foreground text-background font-bold handdrawn-4 hover:bg-background hover:text-foreground transition-all duration-300 ease-in-out border-2 border-foreground"
           >
-            Send
+            Open in my mail app
           </button>
+
+          <p id="contact-note" class="text-base opacity-70" role="status">
+            this opens your email client with everything pre-filled. Nothing is
+            sent from this page.
+          </p>
         </form>
       </section>
     </section>
 
     <Footer />
+
+    <script>
+      const form = document.getElementById(
+        "contact-form"
+      ) as HTMLFormElement | null;
+      const note = document.getElementById("contact-note");
+      const TO = "website@adityajyoti.in";
+
+      form?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const data = new FormData(form);
+        const name = String(data.get("name") ?? "").trim();
+        const email = String(data.get("email") ?? "").trim();
+        const message = String(data.get("message") ?? "").trim();
+
+        const subject = name
+          ? `adityajyoti.in: a message from ${name}`
+          : "adityajyoti.in: a message";
+        const body = `${message}\n\n--\n${name}\n${email}`;
+
+        window.location.href = `mailto:${TO}?subject=${encodeURIComponent(
+          subject
+        )}&body=${encodeURIComponent(body)}`;
+
+        if (note) {
+          note.textContent =
+            "opening your mail app... if nothing happened, email " + TO + " directly.";
+        }
+      });
+
+      const copyBtn = document.getElementById(
+        "copy-email"
+      ) as HTMLButtonElement | null;
+
+      copyBtn?.addEventListener("click", async () => {
+        const address = copyBtn.dataset.email ?? TO;
+        try {
+          await navigator.clipboard.writeText(address);
+          const previous = copyBtn.textContent;
+          copyBtn.textContent = "copied!";
+          window.setTimeout(() => (copyBtn.textContent = previous), 1400);
+        } catch {
+          window.location.href = `mailto:${address}`;
+        }
+      });
+    </script>
   </body>
 </html>

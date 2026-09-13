@@ -10,7 +10,7 @@ peopleCount: 1
 rating: 3.5
 pinned: false
 imgDesc: "Standard Rajasthani Thali served at Ghoomar - Traditional Thali Restaurant"
-heroImage: "./post1-hero.png"
+heroImage: "./hero.png"
 # gallery:
 #   - src: "./menu.png"
 #     alt: "first dish"

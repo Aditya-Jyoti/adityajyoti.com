@@ -7,14 +7,14 @@ dateOfVisit: "2026-05-25"
 rating: 3
 pinned: false
 imgDesc: "Got so bored that I had to pull out the laptop"
-heroImage: "./post2-hero.jpeg"
+heroImage: "./hero.jpeg"
 gallery:
-  - src: "./imgs/indore/1.jpg"
-  - src: "./imgs/indore/2.jpg"
-  - src: "./imgs/indore/3.jpg"
-  - src: "./imgs/indore/4.jpg"
-  - src: "./imgs/indore/5.jpg"
-  - src: "./imgs/indore/6.jpg"
+  - src: "./gallery/1.jpg"
+  - src: "./gallery/2.jpg"
+  - src: "./gallery/3.jpg"
+  - src: "./gallery/4.jpg"
+  - src: "./gallery/5.jpg"
+  - src: "./gallery/6.jpg"
 
 
 ---
@@ -23,7 +23,7 @@ I accompanied my father to **Indore** because I was getting bored. We landed the
 
 Now maybe it is my mistake that I did not forsee it, but it sure is a mood-kill to go out wanting to go to all sorts of tourist places only to get there and find out that its **closed**. 
 
-![the plan](./imgs/indore-plan.png)
+![Handwritten one-day Indore itinerary listing markets, temples and food stops {wide}](./plan.png "the plan, almost none of which survived contact with a Monday")
 
 
 The amount of people I bothered to get a proper consise plan is insane. And honestly I was pretty excited. Its my first time in **Madhya Pradesh** and also my vacations were going on sooo **I WANTED TO ROAM AROUND AHHHH**
@@ -33,7 +33,7 @@ But I digress, now onto what all I had in what limited things I could find (keep
 
 ## Breakfast | [JMB Moti Tabela](https://maps.app.goo.gl/Hb3hvAsf7Xu9LoaZ7) 
 
-![indore-breakfast](./imgs/indore-breakfast.jpg)
+![Aloo kachori and usal poha served on steel plates at JMB Moti Tabela, Indore](./breakfast.jpg "aloo kachori and usal poha at JMB Moti Tabela")
 
 ### The Food
 
@@ -60,7 +60,7 @@ Albeit it took some time to get my food and seating was sparse I was still able 
 
 ## Lunch | [Rajhans Dal Bafle](https://maps.app.goo.gl/HW8pGYWbbQLByY5R8)
 
-![indore-lunch](./imgs/indore-lunch.jpg)
+![Dal bafle thali with aloo sabji, kadhi, dal, papad and chutneys at Rajhans Dal Bafle {wide}](./lunch.jpg "the dal bafle thali at Rajhans")
 
 ### The Food
 
@@ -83,7 +83,7 @@ Honestly, some rice would have made this entire meal perfect. The aloo sabji mix
 
 ### Extra 
 
-![sarafa street](./imgs/indore-sarafa.png)
+![A list of things to try at Sarafa: Joshi dahi bade, Vijay Chat House patties, coconut crush, chhole tikki, bhutte ka kees {right}](./sarafa.png "the todo list i got for sarafa")
 
 This place was located at a place called **Sarafa** which is a jewellery street by day and food street by night.
 

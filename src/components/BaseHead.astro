@@ -13,6 +13,12 @@ interface Props {
   /** Optional pre-generated WebP variant for the preload (same dimensions). */
   preloadImageWebp?: string;
   noindex?: boolean;
+  /** Describes the image for social cards and screen readers. */
+  imageAlt?: string;
+  /** Trail of ancestors, closest last. The current page is appended for you. */
+  breadcrumbs?: { name: string; href: string }[];
+  /** Extra JSON-LD objects merged into the page's @graph. */
+  schema?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
@@ -25,6 +31,9 @@ const {
   preloadImage,
   preloadImageWebp,
   noindex = false,
+  imageAlt,
+  breadcrumbs = [],
+  schema,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -53,12 +62,36 @@ const articleSchema = isArticle && pubDate
       },
       datePublished: pubDate.toISOString(),
       dateModified: (updatedDate ?? pubDate).toISOString(),
+      inLanguage: "en",
+      isAccessibleForFree: true,
       mainEntityOfPage: {
         "@type": "WebPage",
         "@id": canonicalURL.toString(),
       },
     }
   : null;
+
+// Breadcrumbs give Google the site hierarchy instead of a bare URL in results.
+const breadcrumbSchema =
+  breadcrumbs.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [...breadcrumbs, { name: title, href: Astro.url.pathname }].map(
+          (crumb, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: crumb.name,
+            item: new URL(crumb.href, Astro.site).toString(),
+          })
+        ),
+      }
+    : null;
+
+const extraSchemas = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
+
+const schemas = [articleSchema, breadcrumbSchema, ...extraSchemas].filter(Boolean);
+
 ---
 
 <!-- Global Metadata -->
@@ -67,7 +100,18 @@ const articleSchema = isArticle && pubDate
 <meta name="generator" content={Astro.generator} />
 <meta name="theme-color" content="#fbf1c7" />
 
-{noindex && <meta name="robots" content="noindex,nofollow" />}
+<!-- max-image-preview:large is what makes posts eligible for big image
+     results and Google Discover; without it they get a thumbnail. -->
+{
+  noindex ? (
+    <meta name="robots" content="noindex,nofollow" />
+  ) : (
+    <meta
+      name="robots"
+      content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"
+    />
+  )
+}
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
@@ -85,6 +129,8 @@ const articleSchema = isArticle && pubDate
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={ogImage} />
+<meta property="og:image:alt" content={imageAlt ?? title} />
+<meta property="og:locale" content="en_IN" />
 {
   isArticle && pubDate && (
     <meta property="article:published_time" content={pubDate.toISOString()} />
@@ -103,38 +149,36 @@ const articleSchema = isArticle && pubDate
 <meta property="twitter:title" content={fullTitle} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={ogImage} />
+<meta property="twitter:image:alt" content={imageAlt ?? title} />
 
 <!-- Feeds -->
 <link
   rel="alternate"
   type="application/rss+xml"
-  title={`${SITE_TITLE} — RSS Feed`}
+  title={`${SITE_TITLE} RSS Feed`}
   href={new URL("rss.xml", Astro.site)}
 />
 
 <!-- Icon -->
 <link rel="icon" type="image/png" href="/favicon.png" />
 
-<!-- Fonts: preconnect + non-blocking stylesheet, swap to avoid FOIT -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Fonts are self-hosted (see global.css). Preload only the two faces that
+     are on screen immediately: the sketch font used for headings and nav, and
+     the Latin upright Roboto used for body copy. -->
 <link
   rel="preload"
-  as="style"
-  href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap"
+  as="font"
+  type="font/woff2"
+  href="/fonts/Excalifont-Regular.woff2"
+  crossorigin
 />
 <link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap"
-  media="print"
-  onload="this.media='all'"
+  rel="preload"
+  as="font"
+  type="font/woff2"
+  href="/fonts/roboto-normal-latin.woff2"
+  crossorigin
 />
-<noscript>
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap"
-  />
-</noscript>
 
 <!-- Preload LCP image so it's discoverable in HTML, not via CSS -->
 {
@@ -155,12 +199,9 @@ const articleSchema = isArticle && pubDate
 }
 
 {
-  articleSchema && (
-    <script
-      type="application/ld+json"
-      set:html={JSON.stringify(articleSchema)}
-    />
-  )
+  schemas.map((entry) => (
+    <script type="application/ld+json" set:html={JSON.stringify(entry)} />
+  ))
 }
 
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "abc235b4ecf5428ab4372b14cab2b094"}'></script><!-- End Cloudflare Web Analytics -->
